@@ -1,0 +1,150 @@
+agents:
+  registry:
+  - capital_ratio: 0.18
+    id: news-alpha
+    role: news_event
+    enabled: true
+  - capital_ratio: 0.2
+    id: reactive-hft
+    role: reactive
+    enabled: true
+  - capital_ratio: 0.14
+    id: swing-scout
+    role: swing
+    enabled: true
+  - capital_ratio: 0.1
+    id: index-hedge
+    role: futures_hedge
+    enabled: true
+  - capital_ratio: 0.14
+    id: mean-revert-core
+    role: mean_reversion
+    enabled: true
+  - capital_ratio: 0.12
+    id: breakout-beta
+    role: breakout
+    enabled: true
+  - capital_ratio: 0.12
+    id: quality-focus
+    role: fundamental
+    enabled: true
+  scheduler:
+    heartbeat_seconds: 2
+    max_concurrent: 6
+execution:
+  blotter_path: runtime/blotter.jsonl
+  default_venue: sim-ctp
+  futures_fee_rate: 2.3e-05
+  futures_maintenance_margin_rate: 0.1
+  futures_margin_rate: 0.12
+  stock_bid_ask_spread_bps: 6.0
+  stock_commission_rate: 0.00025
+  stock_min_commission: 5.0
+  stock_stamp_duty_rate: 0.0005
+  stock_transfer_fee_rate: 0.00001
+  futures_multiplier:
+    IH9999.CCFX: 300
+  lot_size: 100
+  venues:
+  - adapter: ctp
+    name: sim-ctp
+    type: paper
+feeds:
+  fundamental:
+    fields:
+    - roe
+    - pe_ttm
+    - revenue_yoy
+    type: tushare
+  market:
+    initial_price:
+      510300.SH: 3.86
+      600519.SH: 1480
+      IH9999.CCFX: 2410
+    iterations: 300
+    refresh_seconds: 1
+    seed: 7
+    symbols:
+    - 510300.SH
+    - 600519.SH
+    - IH9999.CCFX
+    type: synthetic_cn
+  news:
+    languages:
+    - zh
+    refresh_interval: 60
+    symbols:
+    - 510300.SH
+    - 600519.SH
+    type: synthetic
+  sentiment:
+    languages:
+    - zh
+    llm_summarizer: qwen2.5:32b
+    type: synthetic_news
+logging:
+  level: INFO
+  sink: logs/system.log
+market_simulation:
+  adversaries:
+    momentum_ignition: true
+    spoofing: true
+  liquidity_model: cn_order_book
+  shock_scenarios:
+  - flash_crash
+  - vol_spike
+  slippage_bps: 8
+portfolio_brain:
+  bandit:
+    exploration: 0.25
+    type: ucb
+  loser_deweight_enabled: true
+  loser_deweight_floor: 0.35
+  loser_deweight_slope: 3
+  min_trade_notional: 5000
+  optimizer: risk_parity
+  per_trade_nav_pct: 0.1
+reasoning:
+  context_store:
+    path: data/rag_store.db
+    type: sqlite
+  llm_router:
+    default: qwen2.5:32b
+    fallbacks:
+    - glm4:9b
+    - gpt-4o-mini
+risk_engine:
+  controls:
+    circuit_breaker: 0.05
+    kill_switch: false
+    max_futures_contracts_per_symbol: 2
+    max_futures_margin_pct: 0.28
+    max_futures_notional_pct: 0.7
+    max_gross_exposure_pct: 0.95
+    max_stock_position_pct: 0.3
+    max_volatility: 0.8
+    min_confidence: 0.45
+    position_limit_pct: 0.35
+strategy_factory:
+  autogen:
+    enabled: true
+    max_candidates: 12
+  genetic:
+    elitism: 0.2
+    population: 24
+  templates:
+  - pair_trade
+  - trend_follow
+  - event_driven
+system:
+  capital_base: 1000000
+  loop_iterations: 80
+  market: cn
+  mode: realtime
+  risk_budget:
+    exposure_limit: 1
+    max_drawdown: 0.12
+    var_limit: 0.08
+  timezone: Asia/Shanghai
+  poll_interval_seconds: 15
+version: 0.1.0

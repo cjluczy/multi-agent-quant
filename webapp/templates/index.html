@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多智能体量化投资系统 - 可视化配置</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io@4.6.0/client-dist/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: bold;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .agent-card {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+        }
+        .agent-card:hover {
+            background-color: #e9ecef;
+        }
+        .agent-controls {
+            margin-top: 10px;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .nav-tabs .nav-link {
+            border-radius: 0;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .tab-content {
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+        }
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        .timeline-item {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 20px;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #667eea;
+        }
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 14px;
+            top: 15px;
+            width: 2px;
+            height: calc(100% + 10px);
+            background-color: #e9ecef;
+        }
+        .timeline-item:last-child::after {
+            display: none;
+        }
+        .timeline-time {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .timeline-content {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+        }
+        .trade-buy {
+            border-left-color: #28a745 !important;
+        }
+        .trade-sell {
+            border-left-color: #dc3545 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- 顶部英雄区 -->
+        <div class="hero">
+            <div class="container">
+                <h1 class="text-center mb-2">多智能体量化投资系统</h1>
+                <p class="text-center">可视化配置与智能体分配策略</p>
+                <div class="text-center mt-3">
+                    <span class="mx-3" id="system-status"></span>
+                    <span class="mx-3" id="current-mode"></span>
+                    <span class="mx-3" id="capital-base"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 导航标签 -->
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#dashboard">系统概览</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#trading">交易流程</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#config">系统配置</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#agents">智能体配置</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#strategy">策略配置</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#risk">风险控制</a>
+            </li>
+        </ul>
+
+        <!-- 标签内容 -->
+        <div class="tab-content">
+            <!-- 系统概览 -->
+            <div id="dashboard" class="tab-pane fade show active">
+                <!-- 关键指标卡片 -->
+                <div class="row g-4 mb-5">
+                    <div class="col-md-3">
+                        <div class="card p-5 text-center shadow-sm bg-white rounded-lg border-0">
+                            <div class="h3 font-weight-bold" id="total-equity">¥0</div>
+                            <div class="text-muted mt-2">总资产</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card p-5 text-center shadow-sm bg-white rounded-lg border-0">
+                            <div class="h3 font-weight-bold text-success" id="profit-rate">0%</div>
+                            <div class="text-muted mt-2">收益率</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card p-5 text-center shadow-sm bg-white rounded-lg border-0">
+                            <div class="h3 font-weight-bold text-warning" id="max-drawdown">0%</div>
+                            <div class="text-muted mt-2">最大回撤</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card p-5 text-center shadow-sm bg-white rounded-lg border-0">
+                            <div class="h3 font-weight-bold" id="trade-count">0</div>
+                            <div class="text-muted mt-2">成交笔数</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 资产增长趋势 -->
+                <div class="card mb-5 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">资产增长趋势</h4>
+                    </div>
+                    <div class="card-body">
+                        <div style="height: 400px;">
+                            <canvas id="equityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 智能体资金分配 -->
+                <div class="card mb-5 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">智能体资金分配</h4>
+                    </div>
+                    <div class="card-body">
+                        <div style="height: 400px;">
+                            <canvas id="agentAllocationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 智能体表现 -->
+                <div class="card mb-5 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">智能体表现</h4>
+                    </div>
+                    <div class="card-body">
+                        <div style="height: 400px;">
+                            <canvas id="agentPerformanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 当前持仓 -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">当前持仓</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="overflow-auto" style="max-height: 400px;">
+                            <table class="table table-hover table-striped">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>股票代码</th>
+                                        <th>持仓数量</th>
+                                        <th>市值</th>
+                                        <th>盈亏</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="positions-table">
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-5">
+                                            <div class="h5">暂无数据</div>
+                                            <div class="text-sm mt-2">系统正在分析市场数据，稍后将显示持仓信息</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 交易流程 -->
+            <div id="trading" class="tab-pane fade">
+                <!-- 交易统计卡片 -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">交易统计</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <div class="text-center p-4 bg-light rounded-lg">
+                                    <div class="h2 font-weight-bold" id="total-trades">0</div>
+                                    <div class="text-muted mt-2">总交易数</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center p-4 bg-light rounded-lg">
+                                    <div class="h2 font-weight-bold text-success" id="total-profit">¥0</div>
+                                    <div class="text-muted mt-2">总盈利</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center p-4 bg-light rounded-lg">
+                                    <div class="h2 font-weight-bold" id="last-update">--</div>
+                                    <div class="text-muted mt-2">最后更新</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 智能体盈亏图表 -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">智能体实时盈亏</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="height: 400px;">
+                            <canvas id="agentPnLChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 实时交易日志 -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">实时交易日志</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="overflow-auto" style="max-height: 400px;">
+                            <table class="table table-hover table-striped" id="trades-table">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>交易时间</th>
+                                        <th>智能体</th>
+                                        <th>股票</th>
+                                        <th>方向</th>
+                                        <th>数量</th>
+                                        <th>价格</th>
+                                        <th>盈亏</th>
+                                        <th>持有时间</th>
+                                        <th>T+1检查</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="trades-body">
+                                    <tr>
+                                        <td colspan="9" class="text-center text-muted py-5">
+                                            <div class="h5">暂无交易数据</div>
+                                            <div class="text-sm mt-2">系统正在分析市场数据，稍后将显示交易记录</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 交易时间轴 -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">交易时间轴</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="overflow-auto" style="max-height: 400px;">
+                            <div id="trading-timeline" class="timeline">
+                                <!-- 时间轴将通过JS动态生成 -->
+                                <div class="text-center text-muted py-5">
+                                    <div class="h5">暂无交易记录</div>
+                                    <div class="text-sm mt-2">系统正在运行中，交易记录将实时显示</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 系统配置 -->
+            <div id="config" class="tab-pane fade">
+                <div class="card">
+                    <div class="card-header">系统基本配置</div>
+                    <div class="card-body">
+                        <form id="system-config-form">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="mode">运行模式</label>
+                                        <select class="form-control" id="mode" name="mode">
+                                            <option value="simulation">模拟模式</option>
+                                            <option value="realtime">实时模式</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="market">市场</label>
+                                        <select class="form-control" id="market" name="market">
+                                            <option value="cn">中国市场</option>
+                                            <option value="us">美国市场</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="capital-base">初始资金</label>
+                                        <input type="number" class="form-control" id="capital-base-input" name="capital_base" step="10000" min="10000">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="loop-iterations">迭代次数</label>
+                                        <input type="number" class="form-control" id="loop-iterations" name="loop_iterations" min="10" max="1000">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="poll-interval">数据更新间隔 (秒)</label>
+                                        <input type="number" class="form-control" id="poll-interval" name="poll_interval_seconds" min="1" max="300">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="timezone">时区</label>
+                                        <input type="text" class="form-control" id="timezone" name="timezone" value="Asia/Shanghai">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">保存配置</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header">风险预算</div>
+                    <div class="card-body">
+                        <form id="risk-budget-form">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="max-drawdown-input">最大回撤</label>
+                                        <input type="number" class="form-control" id="max-drawdown-input" name="max_drawdown" step="0.01" min="0.01" max="1">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="var-limit">VaR限制</label>
+                                        <input type="number" class="form-control" id="var-limit" name="var_limit" step="0.01" min="0.01" max="1">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="exposure-limit">暴露限制</label>
+                                        <input type="number" class="form-control" id="exposure-limit" name="exposure_limit" step="0.1" min="0.1" max="3">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">保存风险预算</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 智能体配置 -->
+            <div id="agents" class="tab-pane fade">
+                <div class="card">
+                    <div class="card-header">智能体管理</div>
+                    <div class="card-body">
+                        <div id="agents-list" class="sortable-list">
+                            <!-- 智能体卡片将通过JS动态生成 -->
+                        </div>
+                        <div class="mt-4">
+                            <button id="add-agent" class="btn btn-success">添加智能体</button>
+                            <button id="save-agents" class="btn btn-primary">保存智能体配置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 策略配置 -->
+            <div id="strategy" class="tab-pane fade">
+                <div class="card">
+                    <div class="card-header">策略工厂配置</div>
+                    <div class="card-body">
+                        <form id="strategy-form">
+                            <div class="form-group">
+                                <label>策略模板</label>
+                                <div class="row" id="strategy-templates">
+                                    <!-- 策略模板将通过JS动态生成 -->
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>自动生成</label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="autogen-enabled" name="autogen_enabled">
+                                            <label class="form-check-label" for="autogen-enabled">启用自动生成</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="max-candidates">最大候选策略数</label>
+                                        <input type="number" class="form-control" id="max-candidates" name="max_candidates" min="1" max="100">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">保存策略配置</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 风险控制 -->
+            <div id="risk" class="tab-pane fade">
+                <div class="card">
+                    <div class="card-header">风险控制配置</div>
+                    <div class="card-body">
+                        <form id="risk-form">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="kill-switch" name="kill_switch">
+                                            <label class="form-check-label" for="kill-switch">启用 kill switch</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="circuit-breaker">熔断阈值</label>
+                                        <input type="number" class="form-control" id="circuit-breaker" name="circuit_breaker" step="0.01" min="0.01" max="0.5">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="position-limit">仓位限制</label>
+                                        <input type="number" class="form-control" id="position-limit" name="position_limit_pct" step="0.01" min="0.01" max="1">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="min-confidence">最小置信度</label>
+                                        <input type="number" class="form-control" id="min-confidence" name="min_confidence" step="0.01" min="0" max="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="max-volatility">最大波动率</label>
+                                        <input type="number" class="form-control" id="max-volatility" name="max_volatility" step="0.1" min="0.1" max="10">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="max-stock-position">最大股票仓位</label>
+                                        <input type="number" class="form-control" id="max-stock-position" name="max_stock_position_pct" step="0.01" min="0.01" max="1">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">保存风险配置</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加智能体模态框 -->
+    <div class="modal fade" id="addAgentModal" tabindex="-1" aria-labelledby="addAgentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAgentModalLabel">添加智能体</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-agent-form">
+                        <div class="form-group">
+                            <label for="agent-id">智能体ID</label>
+                            <input type="text" class="form-control" id="agent-id" name="id" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="agent-role">角色</label>
+                            <select class="form-control" id="agent-role" name="role" required>
+                                <option value="news_event">新闻事件</option>
+                                <option value="reactive">反应式</option>
+                                <option value="swing">波段交易</option>
+                                <option value="futures_hedge">期货对冲</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="agent-capital">资金比例</label>
+                            <input type="number" class="form-control" id="agent-capital" name="capital_ratio" step="0.01" min="0.01" max="1" required>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="agent-enabled" name="enabled" checked>
+                                <label class="form-check-label" for="agent-enabled">启用</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="confirm-add-agent">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 全局变量
+        let currentConfig = {};
+        let runtimeData = {};
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConfig();
+            loadRuntimeData();
+            setupEventListeners();
+        });
+
+        // 加载配置
+        function loadConfig() {
+            fetch('/api/config')
+                .then(response => response.json())
+                .then(data => {
+                    currentConfig = data;
+                    populateConfigForms();
+                    populateAgentsList();
+                    populateStrategyTemplates();
+                });
+        }
+
+        // 加载运行时数据
+        function loadRuntimeData() {
+            fetch('/api/runtime')
+                .then(response => response.json())
+                .then(data => {
+                    runtimeData = data;
+                    updateDashboard();
+                    updateCharts();
+                });
+        }
+
+        // 填充配置表单
+        function populateConfigForms() {
+            if (currentConfig.system) {
+                document.getElementById('mode').value = currentConfig.system.mode || 'simulation';
+                document.getElementById('market').value = currentConfig.system.market || 'cn';
+                document.getElementById('capital-base-input').value = currentConfig.system.capital_base || 1000000;
+                document.getElementById('loop-iterations').value = currentConfig.system.loop_iterations || 80;
+                document.getElementById('poll-interval').value = currentConfig.system.poll_interval_seconds || 15;
+                document.getElementById('timezone').value = currentConfig.system.timezone || 'Asia/Shanghai';
+
+                document.getElementById('system-status').textContent = '系统状态: 正常';
+                document.getElementById('current-mode').textContent = '模式: ' + (currentConfig.system.mode || 'simulation');
+                document.getElementById('capital-base').textContent = '初始资金: ¥' + (currentConfig.system.capital_base || 1000000).toLocaleString();
+            }
+
+            if (currentConfig.system && currentConfig.system.risk_budget) {
+                document.getElementById('max-drawdown-input').value = currentConfig.system.risk_budget.max_drawdown || 0.12;
+                document.getElementById('var-limit').value = currentConfig.system.risk_budget.var_limit || 0.08;
+                document.getElementById('exposure-limit').value = currentConfig.system.risk_budget.exposure_limit || 1.0;
+            }
+
+            if (currentConfig.risk_engine && currentConfig.risk_engine.controls) {
+                document.getElementById('kill-switch').checked = currentConfig.risk_engine.controls.kill_switch || false;
+                document.getElementById('circuit-breaker').value = currentConfig.risk_engine.controls.circuit_breaker || 0.05;
+                document.getElementById('position-limit').value = currentConfig.risk_engine.controls.position_limit_pct || 0.35;
+                document.getElementById('min-confidence').value = currentConfig.risk_engine.controls.min_confidence || 0.45;
+                document.getElementById('max-volatility').value = currentConfig.risk_engine.controls.max_volatility || 0.8;
+                document.getElementById('max-stock-position').value = currentConfig.risk_engine.controls.max_stock_position_pct || 0.3;
+            }
+
+            if (currentConfig.strategy_factory) {
+                document.getElementById('autogen-enabled').checked = currentConfig.strategy_factory.autogen && currentConfig.strategy_factory.autogen.enabled || false;
+                document.getElementById('max-candidates').value = currentConfig.strategy_factory.autogen && currentConfig.strategy_factory.autogen.max_candidates || 12;
+            }
+        }
+
+        // 填充智能体列表
+        function populateAgentsList() {
+            const agentsList = document.getElementById('agents-list');
+            agentsList.innerHTML = '';
+
+            if (currentConfig.agents && currentConfig.agents.registry) {
+                currentConfig.agents.registry.forEach((agent, index) => {
+                    const agentCard = document.createElement('div');
+                    agentCard.className = 'agent-card';
+                    agentCard.dataset.index = index;
+                    agentCard.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5>${agent.id}</h5>
+                                <p class="text-muted">角色: ${agent.role} | 资金比例: ${(agent.capital_ratio * 100).toFixed(2)}%</p>
+                            </div>
+                            <div class="agent-controls">
+                                <button class="btn btn-sm btn-primary edit-agent" data-index="${index}">编辑</button>
+                                <button class="btn btn-sm btn-danger delete-agent" data-index="${index}">删除</button>
+                            </div>
+                        </div>
+                    `;
+                    agentsList.appendChild(agentCard);
+                });
+            }
+
+            // 初始化排序
+            new Sortable(agentsList, {
+                animation: 150,
+                onEnd: function(evt) {
+                    // 重新排序智能体
+                    if (currentConfig.agents && currentConfig.agents.registry) {
+                        const agent = currentConfig.agents.registry.splice(evt.oldIndex, 1)[0];
+                        currentConfig.agents.registry.splice(evt.newIndex, 0, agent);
+                    }
+                }
+            });
+        }
+
+        // 填充策略模板
+        function populateStrategyTemplates() {
+            const templatesContainer = document.getElementById('strategy-templates');
+            templatesContainer.innerHTML = '';
+
+            const templates = currentConfig.strategy_factory && currentConfig.strategy_factory.templates || ['pair_trade', 'trend_follow', 'event_driven'];
+            const allTemplates = ['pair_trade', 'trend_follow', 'event_driven', 'mean_reversion', 'momentum', 'breakout'];
+
+            allTemplates.forEach(template => {
+                const col = document.createElement('div');
+                col.className = 'col-md-4 mb-2';
+                col.innerHTML = `
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="template-${template}" name="template-${template}" ${templates.includes(template) ? 'checked' : ''}>
+                        <label class="form-check-label" for="template-${template}">${template}</label>
+                    </div>
+                `;
+                templatesContainer.appendChild(col);
+            });
+        }
+
+        // 更新仪表板
+        function updateDashboard() {
+            if (runtimeData.dashboard) {
+                const kpis = runtimeData.dashboard.kpis;
+                const performance = runtimeData.dashboard.performance || {};
+                if (kpis) {
+                    document.getElementById('total-equity').textContent = '¥' + kpis.equity.toLocaleString();
+                    document.getElementById('profit-rate').textContent = ((kpis.equity / 1000000 - 1) * 100).toFixed(2) + '%';
+                    document.getElementById('max-drawdown').textContent = (performance.max_drawdown_pct || 0).toFixed(2) + '%';
+                    document.getElementById('trade-count').textContent = kpis.trade_count || 0;
+                }
+
+                // 更新持仓表格
+                const positionsTable = document.getElementById('positions-table');
+                if (runtimeData.dashboard.positions && runtimeData.dashboard.positions.stocks) {
+                    positionsTable.innerHTML = '';
+                    runtimeData.dashboard.positions.stocks.forEach(stock => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${stock.symbol}</td>
+                            <td>${stock.quantity.toLocaleString()}</td>
+                            <td>¥${stock.market_value.toLocaleString()}</td>
+                            <td class="${stock.unrealized_pnl >= 0 ? 'text-success' : 'text-danger'}">
+                                ${stock.unrealized_pnl >= 0 ? '+' : ''}¥${stock.unrealized_pnl.toFixed(2)}
+                            </td>
+                        `;
+                        positionsTable.appendChild(row);
+                    });
+                }
+            }
+        }
+
+        // 更新图表
+        function updateCharts() {
+            const destroyChart = function(chartName) {
+                if (window[chartName] && typeof window[chartName].destroy === 'function') {
+                    window[chartName].destroy();
+                }
+            };
+
+            // 资产增长曲线
+            const equitySeries = runtimeData.account?.equity_curve || runtimeData.dashboard?.equity_curve || runtimeData.equity || [];
+            if (equitySeries.length > 0) {
+                const equityCtx = document.getElementById('equityChart').getContext('2d');
+                destroyChart('equityChart');
+                window.equityChart = new Chart(equityCtx, {
+                    type: 'line',
+                    data: {
+                        labels: equitySeries.map(d => d.tick),
+                        datasets: [{
+                            label: '总资产',
+                            data: equitySeries.map(d => d.equity),
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: '资产增长曲线'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '¥' + value.toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 智能体资金分配
+            if (currentConfig.agents && currentConfig.agents.registry) {
+                const agentAllocationCtx = document.getElementById('agentAllocationChart').getContext('2d');
+                destroyChart('agentAllocationChart');
+                window.agentAllocationChart = new Chart(agentAllocationCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: currentConfig.agents.registry.map(agent => agent.id),
+                        datasets: [{
+                            data: currentConfig.agents.registry.map(agent => agent.capital_ratio),
+                            backgroundColor: [
+                                'rgba(102, 126, 234, 0.8)',
+                                'rgba(118, 75, 162, 0.8)',
+                                'rgba(255, 99, 132, 0.8)',
+                                'rgba(54, 162, 235, 0.8)',
+                                'rgba(255, 206, 86, 0.8)',
+                                'rgba(75, 192, 192, 0.8)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                            },
+                            title: {
+                                display: true,
+                                text: '智能体资金分配'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 智能体表现
+            if (runtimeData.dashboard && runtimeData.dashboard.agent_metrics) {
+                const agentPerformanceCtx = document.getElementById('agentPerformanceChart').getContext('2d');
+                const agentNames = Object.keys(runtimeData.dashboard.agent_metrics);
+                const agentProfits = agentNames.map(name => runtimeData.dashboard.agent_metrics[name].net_pnl || 0);
+
+                destroyChart('agentPerformanceChart');
+                window.agentPerformanceChart = new Chart(agentPerformanceCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: agentNames,
+                        datasets: [{
+                            label: '收益',
+                            data: agentProfits,
+                            backgroundColor: [
+                                'rgba(102, 126, 234, 0.8)',
+                                'rgba(118, 75, 162, 0.8)',
+                                'rgba(255, 99, 132, 0.8)',
+                                'rgba(54, 162, 235, 0.8)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: '智能体表现'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '¥' + value.toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 系统配置表单
+            document.getElementById('system-config-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateSystemConfig();
+            });
+
+            // 风险预算表单
+            document.getElementById('risk-budget-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateRiskBudget();
+            });
+
+            // 风险控制表单
+            document.getElementById('risk-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateRiskControls();
+            });
+
+            // 策略配置表单
+            document.getElementById('strategy-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateStrategyConfig();
+            });
+
+            // 添加智能体按钮
+            document.getElementById('add-agent').addEventListener('click', function() {
+                const modal = new bootstrap.Modal(document.getElementById('addAgentModal'));
+                modal.show();
+            });
+
+            // 确认添加智能体
+            document.getElementById('confirm-add-agent').addEventListener('click', function() {
+                addAgent();
+            });
+
+            // 保存智能体配置
+            document.getElementById('save-agents').addEventListener('click', function() {
+                saveAgentsConfig();
+            });
+
+            // 编辑智能体按钮
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('edit-agent')) {
+                    const index = parseInt(e.target.dataset.index);
+                    editAgent(index);
+                }
+            });
+
+            // 删除智能体按钮
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('delete-agent')) {
+                    const index = parseInt(e.target.dataset.index);
+                    deleteAgent(index);
+                }
+            });
+        }
+
+        // 更新系统配置
+        function updateSystemConfig() {
+            if (!currentConfig.system) {
+                currentConfig.system = {};
+            }
+
+            currentConfig.system.mode = document.getElementById('mode').value;
+            currentConfig.system.market = document.getElementById('market').value;
+            currentConfig.system.capital_base = parseFloat(document.getElementById('capital-base-input').value);
+            currentConfig.system.loop_iterations = parseInt(document.getElementById('loop-iterations').value);
+            currentConfig.system.poll_interval_seconds = parseInt(document.getElementById('poll-interval').value);
+            currentConfig.system.timezone = document.getElementById('timezone').value;
+
+            saveConfig();
+        }
+
+        // 更新风险预算
+        function updateRiskBudget() {
+            if (!currentConfig.system) {
+                currentConfig.system = {};
+            }
+            if (!currentConfig.system.risk_budget) {
+                currentConfig.system.risk_budget = {};
+            }
+
+            currentConfig.system.risk_budget.max_drawdown = parseFloat(document.getElementById('max-drawdown-input').value);
+            currentConfig.system.risk_budget.var_limit = parseFloat(document.getElementById('var-limit').value);
+            currentConfig.system.risk_budget.exposure_limit = parseFloat(document.getElementById('exposure-limit').value);
+
+            saveConfig();
+        }
+
+        // 更新风险控制
+        function updateRiskControls() {
+            if (!currentConfig.risk_engine) {
+                currentConfig.risk_engine = {};
+            }
+            if (!currentConfig.risk_engine.controls) {
+                currentConfig.risk_engine.controls = {};
+            }
+
+            currentConfig.risk_engine.controls.kill_switch = document.getElementById('kill-switch').checked;
+            currentConfig.risk_engine.controls.circuit_breaker = parseFloat(document.getElementById('circuit-breaker').value);
+            currentConfig.risk_engine.controls.position_limit_pct = parseFloat(document.getElementById('position-limit').value);
+            currentConfig.risk_engine.controls.min_confidence = parseFloat(document.getElementById('min-confidence').value);
+            currentConfig.risk_engine.controls.max_volatility = parseFloat(document.getElementById('max-volatility').value);
+            currentConfig.risk_engine.controls.max_stock_position_pct = parseFloat(document.getElementById('max-stock-position').value);
+
+            saveConfig();
+        }
+
+        // 更新策略配置
+        function updateStrategyConfig() {
+            if (!currentConfig.strategy_factory) {
+                currentConfig.strategy_factory = {};
+            }
+
+            // 获取选中的模板
+            const templates = [];
+            document.querySelectorAll('input[name^="template-"]:checked').forEach(input => {
+                templates.push(input.id.replace('template-', ''));
+            });
+            currentConfig.strategy_factory.templates = templates;
+
+            // 自动生成配置
+            if (!currentConfig.strategy_factory.autogen) {
+                currentConfig.strategy_factory.autogen = {};
+            }
+            currentConfig.strategy_factory.autogen.enabled = document.getElementById('autogen-enabled').checked;
+            currentConfig.strategy_factory.autogen.max_candidates = parseInt(document.getElementById('max-candidates').value);
+
+            saveConfig();
+        }
+
+        // 添加智能体
+        function addAgent() {
+            const form = document.getElementById('add-agent-form');
+            const agentData = {
+                id: document.getElementById('agent-id').value,
+                role: document.getElementById('agent-role').value,
+                capital_ratio: parseFloat(document.getElementById('agent-capital').value),
+                enabled: document.getElementById('agent-enabled').checked
+            };
+
+            if (!currentConfig.agents) {
+                currentConfig.agents = {
+                    scheduler: {
+                        max_concurrent: 6,
+                        heartbeat_seconds: 2
+                    },
+                    registry: []
+                };
+            }
+
+            currentConfig.agents.registry.push(agentData);
+            populateAgentsList();
+
+            // 关闭模态框
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addAgentModal'));
+            modal.hide();
+
+            // 重置表单
+            form.reset();
+        }
+
+        // 编辑智能体
+        function editAgent(index) {
+            const agent = currentConfig.agents.registry[index];
+            document.getElementById('agent-id').value = agent.id;
+            document.getElementById('agent-role').value = agent.role;
+            document.getElementById('agent-capital').value = agent.capital_ratio;
+            document.getElementById('agent-enabled').checked = agent.enabled;
+
+            const modal = new bootstrap.Modal(document.getElementById('addAgentModal'));
+            modal.show();
+
+            // 更改确认按钮行为
+            document.getElementById('confirm-add-agent').onclick = function() {
+                currentConfig.agents.registry[index] = {
+                    id: document.getElementById('agent-id').value,
+                    role: document.getElementById('agent-role').value,
+                    capital_ratio: parseFloat(document.getElementById('agent-capital').value),
+                    enabled: document.getElementById('agent-enabled').checked
+                };
+                populateAgentsList();
+                modal.hide();
+                document.getElementById('add-agent-form').reset();
+            };
+        }
+
+        // 删除智能体
+        function deleteAgent(index) {
+            if (confirm('确定要删除这个智能体吗？')) {
+                currentConfig.agents.registry.splice(index, 1);
+                populateAgentsList();
+            }
+        }
+
+        // 保存智能体配置
+        function saveAgentsConfig() {
+            saveConfig();
+        }
+
+        // 保存配置
+        function saveConfig() {
+            fetch('/api/config', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(currentConfig)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('配置保存成功！');
+                }
+            });
+        }
+
+        // 定期刷新数据
+        setInterval(loadRuntimeData, 5000);
+
+        // WebSocket连接
+        const socket = io();
+
+        // 处理交易数据更新
+        socket.on('trades_update', function(data) {
+            updateTrades(data.trades);
+        });
+
+        // 处理运行时数据更新
+        socket.on('runtime_update', function(data) {
+            runtimeData = data;
+            updateDashboard();
+            updateCharts();
+        });
+
+        // 更新交易数据
+        function updateTrades(trades) {
+            const tradesBody = document.getElementById('trades-body');
+            const timeline = document.getElementById('trading-timeline');
+            
+            if (trades.length === 0) {
+                tradesBody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">暂无交易数据</td></tr>';
+                timeline.innerHTML = '<div class="text-center text-muted">暂无交易记录</div>';
+                return;
+            }
+
+            // 智能体名称映射
+            const agentNames = {
+                'reactive-agent': '反应式智能体',
+                'swing-agent': '波段交易智能体',
+                'news-agent': '新闻事件智能体'
+            };
+
+            // 更新交易表格
+            tradesBody.innerHTML = '';
+            let totalProfit = 0;
+            
+            trades.reverse().forEach(trade => {
+                const row = document.createElement('tr');
+                const profit = trade.realized_pnl || 0;
+                totalProfit += profit;
+                
+                // 使用后端返回的真实数据
+                const tradeTimeStr = trade.timestamp || new Date().toLocaleString();
+                const holdingTime = trade.holding_time || 'N/A';
+                
+                // 智能体名称
+                const agentName = agentNames[trade.agent_id] || trade.agent_id;
+                
+                // T+1检查
+                let t1Check = 'N/A';
+                if (trade.t1_compliant !== undefined) {
+                    t1Check = trade.t1_compliant ? 
+                        '<span class="status-badge status-success">合规</span>' : 
+                        '<span class="status-badge status-danger">不合规</span>';
+                }
+                
+                row.innerHTML = `
+                    <td>${tradeTimeStr}</td>
+                    <td>${agentName}</td>
+                    <td>${trade.symbol} ${trade.stock_name ? '(' + trade.stock_name + ')' : ''}</td>
+                    <td><span class="status-badge ${trade.action === 'buy' ? 'status-success' : 'status-danger'}">${trade.action === 'buy' ? '买入' : '卖出'}</span></td>
+                    <td>${trade.quantity.toLocaleString()}</td>
+                    <td>¥${trade.price.toFixed(2)}</td>
+                    <td class="${profit >= 0 ? 'text-success' : 'text-danger'}">
+                        ${profit >= 0 ? '+' : ''}¥${profit.toFixed(2)}
+                    </td>
+                    <td>${holdingTime}</td>
+                    <td>${t1Check}</td>
+                `;
+                tradesBody.appendChild(row);
+            });
+
+            // 更新时间轴
+            timeline.innerHTML = '';
+            trades.reverse().forEach(trade => {
+                const item = document.createElement('div');
+                item.className = 'timeline-item';
+                const profit = trade.realized_pnl || 0;
+                const agentName = agentNames[trade.agent_id] || trade.agent_id;
+                
+                item.innerHTML = `
+                    <div class="timeline-time">${trade.timestamp || new Date().toLocaleString()}</div>
+                    <div class="timeline-content ${trade.action === 'buy' ? 'trade-buy' : 'trade-sell'}">
+                        <strong>${agentName}</strong> ${trade.action === 'buy' ? '买入' : '卖出'} <strong>${trade.symbol} ${trade.stock_name ? '(' + trade.stock_name + ')' : ''}</strong>
+                        <br>数量: ${trade.quantity.toLocaleString()}, 价格: ¥${trade.price.toFixed(2)}
+                        <br>盈亏: <span class="${profit >= 0 ? 'text-success' : 'text-danger'}">
+                            ${profit >= 0 ? '+' : ''}¥${profit.toFixed(2)}
+                        </span>
+                    </div>
+                `;
+                timeline.appendChild(item);
+            });
+
+            // 更新统计信息
+            document.getElementById('total-trades').textContent = trades.length;
+            document.getElementById('total-profit').textContent = '¥' + totalProfit.toFixed(2);
+            document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+
+            // 更新智能体盈亏图表
+            updateAgentPnLChart(trades);
+        }
+
+        // 更新智能体盈亏图表
+        function updateAgentPnLChart(trades) {
+            // 智能体名称映射
+            const agentNameMap = {
+                'reactive-agent': '反应式智能体',
+                'swing-agent': '波段交易智能体',
+                'news-agent': '新闻事件智能体'
+            };
+
+            // 按时间排序交易记录
+            const sortedTrades = [...trades].sort((a, b) => {
+                const timeA = new Date(a.timestamp).getTime();
+                const timeB = new Date(b.timestamp).getTime();
+                return timeA - timeB;
+            });
+
+            // 获取所有时间点
+            const timePoints = [...new Set(sortedTrades.map(trade => trade.timestamp))].sort();
+            
+            // 为每个智能体创建时间序列数据
+            const agentData = {};
+            const agentIds = [...new Set(sortedTrades.map(trade => trade.agent_id))];
+            
+            agentIds.forEach(agentId => {
+                agentData[agentId] = {
+                    cumulativePnL: 0,
+                    data: []
+                };
+            });
+
+            // 按时间顺序计算每个智能体的累计盈亏
+            timePoints.forEach(timestamp => {
+                const tradesAtTime = sortedTrades.filter(trade => trade.timestamp === timestamp);
+                agentIds.forEach(agentId => {
+                    const agentTrades = tradesAtTime.filter(trade => trade.agent_id === agentId);
+                    agentTrades.forEach(trade => {
+                        agentData[agentId].cumulativePnL += trade.realized_pnl || 0;
+                    });
+                    agentData[agentId].data.push(agentData[agentId].cumulativePnL);
+                });
+            });
+
+            const agentNames = agentIds.map(id => agentNameMap[id] || id);
+            const colors = [
+                'rgba(102, 126, 234, 1)',
+                'rgba(118, 75, 162, 1)',
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)'
+            ];
+
+            const ctx = document.getElementById('agentPnLChart').getContext('2d');
+            
+            // 销毁旧图表
+            if (window.agentPnLChart && typeof window.agentPnLChart.destroy === 'function') {
+                window.agentPnLChart.destroy();
+            }
+
+            // 创建新图表
+            window.agentPnLChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: timePoints.map(time => {
+                        const date = new Date(time);
+                        return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+                    }),
+                    datasets: agentIds.map((agentId, index) => ({
+                        label: agentNames[index],
+                        data: agentData[agentId].data,
+                        borderColor: colors[index % colors.length],
+                        backgroundColor: colors[index % colors.length].replace('1)', '0.1)'),
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: false,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: '智能体实时盈亏'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += '¥' + context.parsed.y.toFixed(2);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: '时间'
+                            },
+                            ticks: {
+                                maxTicksLimit: 10
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '累计盈亏 (¥)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '¥' + value.toFixed(0);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

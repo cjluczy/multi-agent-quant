@@ -1,0 +1,2268 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>多智能体量化控制台</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232563eb'/%3E%3Cpath d='M8 21h16M10 17l3-3 3 2 6-6' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --panel: #ffffff;
+      --panel-soft: #f8fafc;
+      --line: #d7dee8;
+      --text: #172033;
+      --muted: #667085;
+      --accent: #2563eb;
+      --accent-2: #0f766e;
+      --good: #16a34a;
+      --bad: #dc2626;
+      --warn: #d97706;
+      --radius: 18px;
+      --shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+      color-scheme: light;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #f7f9fc, #eef3f8 52%, #f6f8fb);
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 224px minmax(0, 1fr);
+      max-width: 1600px;
+      margin: 0 auto;
+      min-width: 0;
+    }
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 20px 14px 20px 18px;
+      border-right: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(12px);
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 14px;
+      min-width: 0;
+    }
+    .brand { display: grid; gap: 6px; }
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .brand h1, .topbar h2, .section-title { margin: 0; letter-spacing: -.03em; }
+    .brand h1 { font-size: 24px; line-height: 1.08; }
+    .brand p, .topbar p, .muted, .empty { margin: 0; color: var(--muted); line-height: 1.45; }
+    .nav { display: grid; gap: 8px; }
+    .nav-btn {
+      position: relative;
+      width: 100%;
+      text-align: left;
+      padding: 12px 12px 12px 16px;
+      border-radius: 14px;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid transparent;
+      display: grid;
+      gap: 4px;
+      transition: .15s ease;
+    }
+    .nav-btn::before {
+      content: "";
+      position: absolute;
+      inset: 10px auto 10px 0;
+      width: 3px;
+      border-radius: 999px;
+      background: transparent;
+    }
+    .nav-btn:hover, .nav-btn.active {
+      background: #f6f9fc;
+      border-color: #e4ebf4;
+      transform: none;
+    }
+    .nav-btn.active::before {
+      background: var(--accent);
+    }
+    .nav-btn strong { font-size: 15px; }
+    .nav-btn span { color: var(--muted); font-size: 12px; }
+    .side-panel, .panel, .hero, .metric, .notice {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+      min-width: 0;
+    }
+    .side-panel, .panel, .notice { padding: 18px; }
+    .side-panel {
+      align-self: end;
+      display: grid;
+      gap: 12px;
+      background: rgba(248, 250, 252, 0.9);
+      box-shadow: none;
+    }
+    .sidebar-kpi-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .sidebar-kpi {
+      display: grid;
+      gap: 4px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid #e5ebf2;
+      background: #fff;
+      min-width: 0;
+    }
+    .sidebar-kpi[data-span="wide"] {
+      grid-column: 1 / -1;
+    }
+    .sidebar-kpi span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .sidebar-kpi strong {
+      display: block;
+      font-size: 17px;
+      line-height: 1.15;
+      letter-spacing: -.03em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sidebar-kpi strong.big {
+      font-size: 26px;
+      line-height: 1;
+    }
+    .sidebar-footnote {
+      padding-top: 2px;
+      border-top: 1px solid #e7edf4;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    .workspace { padding: 20px 22px 32px; min-width: 0; overflow-x: hidden; }
+    .workspace-inner { max-width: 1420px; margin: 0 auto; display: grid; gap: 18px; min-width: 0; }
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: start;
+      min-width: 0;
+    }
+    .topbar h2 { font-size: clamp(26px, 3vw, 38px); line-height: 1.04; margin-top: 4px; margin-bottom: 6px; }
+    .top-actions { display: grid; gap: 10px; justify-items: stretch; min-width: 0; width: min(100%, 430px); }
+    .status-row, .btn-row, .meta-row, .tiles, .two, .three { display: grid; gap: 14px; min-width: 0; }
+    .status-row { display: flex; justify-content: flex-end; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .btn-row { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; min-width: 0; }
+    .top-actions .status-row {
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid #e5ebf2;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    }
+    .top-actions .btn-row {
+      justify-content: flex-end;
+      padding: 10px;
+      border-radius: 16px;
+      border: 1px solid #e5ebf2;
+      background: rgba(248, 250, 252, 0.95);
+    }
+    .status-pill {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      font-weight: 700;
+    }
+    .status-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+      box-shadow: 0 0 0 6px rgba(148, 163, 184, 0.12);
+    }
+    .status-pill[data-status="running"]::before,
+    .status-pill[data-status="loading"]::before {
+      background: var(--accent-2);
+      box-shadow: 0 0 0 6px rgba(15, 118, 110, 0.12);
+    }
+    .status-pill[data-status="error"]::before {
+      background: var(--bad);
+      box-shadow: 0 0 0 6px rgba(220, 38, 38, 0.12);
+    }
+    .status-pill[data-status="success"]::before {
+      background: var(--good);
+      box-shadow: 0 0 0 6px rgba(22, 163, 74, 0.12);
+    }
+    .status-line {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: right;
+      flex: 1 1 170px;
+    }
+    .btn {
+      min-height: 44px;
+      border-radius: 999px;
+      border: 1px solid #d7dee8;
+      padding: 0 16px;
+      font-weight: 700;
+      color: var(--text);
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    .btn.primary {
+      color: #fff;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--accent), #1d4ed8);
+    }
+    .notice { display: grid; gap: 8px; }
+    .notice[data-tone="error"] { border-color: rgba(220, 38, 38, 0.22); }
+    .notice[data-tone="warning"] { border-color: rgba(217, 119, 6, 0.24); }
+    .view { display: grid; gap: 18px; }
+    .hero { padding: 24px; display: grid; gap: 16px; position: relative; overflow: hidden; min-height: 204px; align-content: start; background: linear-gradient(180deg, #ffffff, #f8fbff); }
+    .hero h3 { margin: 0; font-size: 20px; }
+    .hero-value { display: flex; gap: 16px; align-items: baseline; flex-wrap: wrap; position: relative; z-index: 1; min-width: 0; }
+    .hero-number {
+      font-size: clamp(42px, 5vw, 80px);
+      line-height: .95;
+      letter-spacing: -.06em;
+      font-weight: 800;
+      min-width: 0;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .hero-badge {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(37, 99, 235, 0.14);
+      background: rgba(37, 99, 235, 0.08);
+      font-weight: 700;
+    }
+    .meta-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      flex-wrap: unset;
+      width: 100%;
+      min-width: 0;
+      align-items: stretch;
+    }
+    .meta-chip {
+      min-width: 0;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: var(--panel-soft);
+      border: 1px solid #e5eaf0;
+      max-width: 100%;
+    }
+    .meta-chip span, .kv span, .table th { color: var(--muted); font-size: 12px; }
+    .meta-chip strong, .kv strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 18px;
+      min-width: 0;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .tiles { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); align-items: stretch; }
+    .metric { padding: 18px; min-height: 132px; display: grid; align-content: space-between; }
+    .metric strong { display: block; margin: 6px 0; font-size: clamp(24px, 2.2vw, 38px); line-height: 1; letter-spacing: -.04em; }
+    .two { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; min-width: 0; }
+    .equal-panels { align-items: stretch; }
+    .equal-panels > .panel { height: 100%; }
+    .three { grid-template-columns: minmax(0, 1.55fr) minmax(0, 0.85fr); align-items: start; min-width: 0; }
+    .panel { display: grid; gap: 14px; align-content: start; }
+    .section-head { display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .section-title { font-size: 20px; line-height: 1.06; }
+    .tag { display: none; }
+    .config-stack {
+      display: grid;
+      gap: 14px;
+    }
+    .config-section {
+      display: grid;
+      gap: 14px;
+      padding: 16px 18px;
+      border-radius: 16px;
+      border: 1px solid #e5ebf2;
+      background: #fbfcfe;
+    }
+    .config-section-head {
+      display: grid;
+      gap: 4px;
+    }
+    .config-section-head h4 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.3;
+    }
+    .config-section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .kv-list { display: grid; gap: 10px; }
+    .kv {
+      display: grid;
+      grid-template-columns: minmax(120px, .9fr) 1fr;
+      gap: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .kv:last-child { border-bottom: 0; padding-bottom: 0; }
+    .chart {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      background: linear-gradient(180deg, #fbfdff, #f5f8fc);
+    }
+    .alerts { display: grid; gap: 12px; }
+    .alert {
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid #e7edf3;
+      background: #fbfcfe;
+      display: grid;
+      gap: 6px;
+    }
+    .severity { display: inline-flex; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .severity.info { color: var(--accent-2); background: rgba(15, 118, 110, 0.08); }
+    .severity.warning { color: var(--warn); background: rgba(217, 119, 6, 0.08); }
+    .severity.critical { color: var(--bad); background: rgba(220, 38, 38, 0.08); }
+    .table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: 16px; max-width: 100%; min-width: 0; }
+    .table { width: 100%; border-collapse: collapse; min-width: 680px; }
+    .table th, .table td {
+      padding: 13px 14px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+      white-space: nowrap;
+      vertical-align: top;
+      font-size: 14px;
+    }
+    .table th {
+      position: sticky;
+      top: 0;
+      background: #f8fafc;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .table tr:last-child td { border-bottom: 0; }
+    .field-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    .field { display: grid; gap: 8px; }
+    .field label, .field span { font-size: 13px; color: var(--muted); font-weight: 600; }
+    .field input[type="number"],
+    .field input[type="text"],
+    .field select {
+      min-height: 46px;
+      border-radius: 14px;
+      border: 1px solid #d5dde7;
+      background: #fff;
+      color: var(--text);
+      padding: 0 14px;
+    }
+    .field input[type="number"]:focus,
+    .field input[type="text"]:focus,
+    .field select:focus {
+      outline: none;
+      border-color: rgba(37, 99, 235, 0.45);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .source-card {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--panel-soft);
+      text-align: left;
+      transition: .15s ease;
+    }
+    .source-card:hover,
+    .source-card.active {
+      border-color: rgba(37, 99, 235, 0.24);
+      background: rgba(37, 99, 235, 0.05);
+    }
+    .source-card strong {
+      font-size: 16px;
+    }
+    .source-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .pill-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .mini-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid #dbe3ec;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .mini-pill.good { color: var(--good); border-color: rgba(22, 163, 74, 0.18); background: rgba(22, 163, 74, 0.06); }
+    .mini-pill.warn { color: var(--warn); border-color: rgba(217, 119, 6, 0.18); background: rgba(217, 119, 6, 0.06); }
+    .mini-pill.bad { color: var(--bad); border-color: rgba(220, 38, 38, 0.18); background: rgba(220, 38, 38, 0.06); }
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .summary-box {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid #e5ebf2;
+      background: #fbfcfe;
+    }
+    .summary-box h4 {
+      margin: 0;
+      font-size: 15px;
+    }
+    .summary-box p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .token-banner {
+      display: grid;
+      gap: 12px;
+      padding: 16px 18px;
+      border-radius: 16px;
+      border: 1px solid #e5ebf2;
+      background: #fbfcfe;
+    }
+    .token-banner[data-tone="warning"] {
+      border-color: rgba(217, 119, 6, 0.24);
+      background: rgba(217, 119, 6, 0.05);
+    }
+    .token-banner[data-tone="good"] {
+      border-color: rgba(22, 163, 74, 0.2);
+      background: rgba(22, 163, 74, 0.05);
+    }
+    .token-banner code {
+      display: block;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid #dde4ec;
+      color: #0f172a;
+      white-space: pre-wrap;
+      word-break: break-all;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+    }
+    .agent-list {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      min-width: 0;
+      background: #f8fafc;
+    }
+    .agent-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) 96px minmax(0, 0.9fr) minmax(0, 1.15fr) auto;
+      gap: 14px;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid #e7edf4;
+      background: #fff;
+      min-height: 0;
+      min-width: 0;
+    }
+    .agent-row:last-child { border-bottom: 0; }
+    .agent-row .btn { justify-self: end; }
+    .agent-row .field {
+      gap: 6px;
+    }
+    .agent-row .field span {
+      font-size: 12px;
+    }
+    .agent-row input[type="number"],
+    .agent-row input[type="text"],
+    .agent-row select {
+      min-height: 42px;
+    }
+    .agent-primary {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+    .agent-primary-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-width: 0;
+    }
+    .agent-primary-head span {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .agent-role-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid #dbe3ec;
+      background: #f8fafc;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .agent-row .check {
+      justify-self: center;
+      padding-top: 20px;
+    }
+    .check { display: inline-flex; align-items: center; gap: 10px; }
+    .brand p,
+    .topbar p,
+    .muted,
+    .status-line,
+    .btn,
+    .section-title,
+    .nav-btn span,
+    .nav-btn strong {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .good { color: var(--good); }
+    .bad { color: var(--bad); }
+    @media (max-width: 1200px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+    @media (max-width: 1320px) {
+      .agent-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+      }
+      .agent-row .btn {
+        justify-self: stretch;
+      }
+    }
+    @media (max-width: 960px) {
+      .workspace { padding: 18px 14px 24px; }
+      .topbar, .two, .three, .stack-grid { grid-template-columns: 1fr; }
+      .top-actions { justify-items: stretch; min-width: 0; }
+      .status-row, .btn-row { justify-content: flex-start; }
+      .agent-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="eyebrow">Multi-Agent Quant</div>
+        <h1>量化控制台</h1>
+      </div>
+      <nav id="nav" class="nav"></nav>
+      <section id="sidebarPanel" class="side-panel"></section>
+    </aside>
+
+    <section class="workspace">
+      <div class="workspace-inner">
+        <header class="topbar">
+          <div>
+            <div id="routeEyebrow" class="eyebrow"></div>
+            <h2 id="routeTitle"></h2>
+            <p id="routeSubtitle"></p>
+          </div>
+          <div class="top-actions">
+            <div class="status-row">
+              <div id="statusBadge" class="status-pill" data-status="idle">待机</div>
+              <div id="statusLine" class="status-line"></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn" data-action="refresh">刷新状态</button>
+              <button class="btn" data-action="disable-loser">禁用最弱智能体</button>
+              <button id="runButton" class="btn primary" data-action="run">运行模拟</button>
+            </div>
+          </div>
+        </header>
+
+        <section id="notice" class="notice"></section>
+        <main id="view"></main>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const ROUTES = {
+      overview: { label: "判断", brief: "账户与风险", eyebrow: "账户视图", title: "判断", subtitle: "先看当前组合、风险和最近成交" },
+      run: { label: "配置", brief: "行情与启动", eyebrow: "运行设置", title: "配置", subtitle: "先选行情源，再改参数，再启动运行" },
+      "agent-config": { label: "智能体配置", brief: "角色与配比", eyebrow: "策略编排", title: "智能体配置", subtitle: "单独维护角色、启停和资金配比" },
+      "agent-performance": { label: "智能体表现", brief: "排行与曲线", eyebrow: "绩效跟踪", title: "智能体表现", subtitle: "只看排行、NAV 曲线和强弱变化" },
+      portfolio: { label: "持仓", brief: "仓位与流水", eyebrow: "仓位跟踪", title: "持仓", subtitle: "把仓位、盈亏和成交流水分开看" },
+      history: { label: "历史", brief: "运行记录", eyebrow: "历史对比", title: "历史", subtitle: "对比历次运行和当前告警" }
+    };
+    const AVAILABLE_AGENT_ROLES = [
+      ["news_event", "新闻事件"],
+      ["reactive", "反应式交易"],
+      ["swing", "波段交易"],
+      ["futures_hedge", "期货对冲"],
+      ["mean_reversion", "均值回归"],
+      ["breakout", "突破交易"],
+      ["fundamental", "基本面精选"]
+    ];
+
+    const nav = document.getElementById("nav");
+    const sidebarPanel = document.getElementById("sidebarPanel");
+    const routeEyebrow = document.getElementById("routeEyebrow");
+    const routeTitle = document.getElementById("routeTitle");
+    const routeSubtitle = document.getElementById("routeSubtitle");
+    const statusBadge = document.getElementById("statusBadge");
+    const statusLine = document.getElementById("statusLine");
+    const notice = document.getElementById("notice");
+    const view = document.getElementById("view");
+    const runButton = document.getElementById("runButton");
+
+    const POLL_MS = 1500;
+    let currentState = null;
+    let configDraft = null;
+    let draftDirty = false;
+    let fetchInFlight = false;
+    let poller = null;
+    let lastRoute = null;
+    let lastNavHtml = "";
+    let lastSidebarHtml = "";
+    let lastNoticeHtml = "";
+    let lastNoticeTone = "";
+    let lastViewHtml = "";
+    let lastSyncAt = null;
+
+    function routePath(route) {
+      return `/console/${route}`;
+    }
+
+    function getRoute() {
+      const path = window.location.pathname.replace(/\/+$/, "");
+      const last = path.split("/").filter(Boolean).pop() || "";
+      if (last === "agents") return "agent-performance";
+      return ROUTES[last] ? last : "overview";
+    }
+
+    function ensureRoute() {
+      const route = getRoute();
+      const expected = routePath(route);
+      if (window.location.pathname !== expected) {
+        history.replaceState({}, "", expected);
+      }
+      return route;
+    }
+
+    function navigate(route) {
+      const next = ROUTES[route] ? route : "overview";
+      const path = routePath(next);
+      if (window.location.pathname !== path) {
+        history.pushState({}, "", path);
+      }
+      render(currentState, { forceView: true });
+    }
+
+    function cloneConfig(config) {
+      const draft = JSON.parse(JSON.stringify(config || {}));
+      draft.system = draft.system || {};
+      draft.system.mode = draft.system.mode || "realtime";
+      draft.system.market = draft.system.market || "cn";
+      draft.system.capital_base = Number(draft.system.capital_base ?? 1000000);
+      draft.system.loop_iterations = Number(draft.system.loop_iterations ?? 80);
+      draft.system.poll_interval_seconds = Number(draft.system.poll_interval_seconds ?? 15);
+      draft.system.timezone = draft.system.timezone || "Asia/Shanghai";
+      draft.system.risk_budget = draft.system.risk_budget || {};
+      draft.system.risk_budget.max_drawdown = Number(draft.system.risk_budget.max_drawdown ?? 0.12);
+      draft.system.risk_budget.var_limit = Number(draft.system.risk_budget.var_limit ?? 0.08);
+      draft.system.risk_budget.exposure_limit = Number(draft.system.risk_budget.exposure_limit ?? 1);
+
+      draft.feeds = draft.feeds || {};
+      draft.feeds.market = draft.feeds.market || {};
+      draft.feeds.market.type = draft.feeds.market.type || "synthetic_cn";
+      draft.feeds.market.symbols = Array.isArray(draft.feeds.market.symbols) ? draft.feeds.market.symbols : ["510300.SH", "600519.SH", "IH9999.CCFX"];
+      draft.feeds.market.poll_interval_seconds = Number(draft.feeds.market.poll_interval_seconds ?? draft.system.poll_interval_seconds ?? 15);
+      draft.feeds.market.token = draft.feeds.market.token || "";
+      draft.feeds.market.token_env = draft.feeds.market.token_env || "TUSHARE_TOKEN";
+      draft.feeds.market.fallback_provider = draft.feeds.market.fallback_provider || "easyquotation";
+      draft.feeds.market.provider = draft.feeds.market.provider || "sina";
+      draft.feeds.market.path = draft.feeds.market.path || "";
+      draft.feeds.market.replay_interval_seconds = Number(draft.feeds.market.replay_interval_seconds ?? 0);
+      draft.feeds.market.symbol_field = draft.feeds.market.symbol_field || "symbol";
+      draft.feeds.market.price_field = draft.feeds.market.price_field || "price";
+      draft.feeds.market.volume_field = draft.feeds.market.volume_field || "volume";
+      draft.feeds.market.feature_window = Number(draft.feeds.market.feature_window ?? 20);
+
+      draft.risk_engine = draft.risk_engine || {};
+      draft.risk_engine.controls = draft.risk_engine.controls || {};
+      draft.risk_engine.controls.kill_switch = Boolean(draft.risk_engine.controls.kill_switch);
+      draft.risk_engine.controls.circuit_breaker = Number(draft.risk_engine.controls.circuit_breaker ?? 0.05);
+      draft.risk_engine.controls.position_limit_pct = Number(draft.risk_engine.controls.position_limit_pct ?? 0.35);
+      draft.risk_engine.controls.min_confidence = Number(draft.risk_engine.controls.min_confidence ?? 0.45);
+      draft.risk_engine.controls.max_volatility = Number(draft.risk_engine.controls.max_volatility ?? 0.8);
+      draft.risk_engine.controls.max_stock_position_pct = Number(draft.risk_engine.controls.max_stock_position_pct ?? 0.3);
+      draft.risk_engine.controls.max_futures_contracts_per_symbol = Number(draft.risk_engine.controls.max_futures_contracts_per_symbol ?? 2);
+      draft.risk_engine.controls.max_futures_margin_pct = Number(draft.risk_engine.controls.max_futures_margin_pct ?? 0.28);
+      draft.risk_engine.controls.max_futures_notional_pct = Number(draft.risk_engine.controls.max_futures_notional_pct ?? 0.7);
+      draft.risk_engine.controls.max_gross_exposure_pct = Number(draft.risk_engine.controls.max_gross_exposure_pct ?? 0.95);
+
+      draft.strategy_factory = draft.strategy_factory || {};
+      draft.strategy_factory.templates = Array.isArray(draft.strategy_factory.templates) ? draft.strategy_factory.templates : ["pair_trade", "trend_follow", "event_driven"];
+      draft.strategy_factory.autogen = draft.strategy_factory.autogen || {};
+      draft.strategy_factory.autogen.enabled = Boolean(draft.strategy_factory.autogen.enabled);
+      draft.strategy_factory.autogen.max_candidates = Number(draft.strategy_factory.autogen.max_candidates ?? 12);
+
+      draft.agents = draft.agents || {};
+      draft.agents.registry = Array.isArray(draft.agents.registry) ? draft.agents.registry : [];
+      draft.agents.registry = draft.agents.registry.map((agent) => ({
+        id: agent.id,
+        role: agent.role,
+        enabled: Boolean(agent.enabled ?? true),
+        capital_ratio: Number(agent.capital_ratio ?? 0)
+      }));
+      return draft;
+    }
+
+    function syncDraft(config, force = false) {
+      if (!configDraft || force || !draftDirty) {
+        configDraft = cloneConfig(config);
+      }
+    }
+
+    function getNested(source, path, fallback = "") {
+      const value = String(path).split(".").reduce((acc, key) => acc?.[key], source);
+      return value ?? fallback;
+    }
+
+    function setNested(target, path, value) {
+      const keys = String(path).split(".");
+      let cursor = target;
+      keys.slice(0, -1).forEach((key) => {
+        if (!cursor[key] || typeof cursor[key] !== "object") cursor[key] = {};
+        cursor = cursor[key];
+      });
+      cursor[keys[keys.length - 1]] = value;
+    }
+
+    async function fetchState() {
+      if (fetchInFlight) return;
+      fetchInFlight = true;
+      const response = await fetch(`/api/state?ts=${Date.now()}`, {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-store" }
+      });
+      try {
+        if (!response.ok) throw new Error(`状态拉取失败 (${response.status})`);
+        const payload = await response.json();
+        currentState = payload;
+        lastSyncAt = new Date();
+        syncDraft(payload.active_config || payload.config || {});
+        render(payload);
+      } finally {
+        fetchInFlight = false;
+      }
+    }
+
+    function startPolling() {
+      if (poller !== null) return;
+      poller = window.setInterval(() => {
+        fetchState().catch((error) => setErrorStatus(error.message));
+      }, POLL_MS);
+    }
+
+    function setErrorStatus(message) {
+      statusBadge.dataset.status = "error";
+      statusBadge.textContent = "异常";
+      statusLine.textContent = message;
+    }
+
+    function formatClock(value) {
+      if (!value) return "-";
+      return value.toLocaleTimeString("zh-CN", { hour12: false });
+    }
+
+    function setTextIfChanged(node, value) {
+      if (node.textContent !== value) {
+        node.textContent = value;
+      }
+    }
+
+    function render(state, options = {}) {
+      const route = ensureRoute();
+      const routeChanged = route !== lastRoute;
+      renderNav(route);
+      renderHeader(route, state);
+      renderSidebar(state);
+      renderNotice(state);
+      renderView(route, state, { force: Boolean(options.forceView || routeChanged) });
+      lastRoute = route;
+      updateRunButton(state?.status || "idle");
+    }
+
+    function renderNav(route) {
+      const html = Object.entries(ROUTES).map(([key, meta]) => `
+        <button class="nav-btn ${key === route ? "active" : ""}" type="button" data-route="${key}">
+          <strong>${meta.label}</strong>
+          <span>${meta.brief}</span>
+        </button>
+      `).join("");
+      if (html !== lastNavHtml) {
+        nav.innerHTML = html;
+        lastNavHtml = html;
+      }
+    }
+
+    function renderHeader(route, state) {
+      const meta = ROUTES[route];
+      setTextIfChanged(routeEyebrow, meta.eyebrow);
+      setTextIfChanged(routeTitle, meta.title);
+      setTextIfChanged(routeSubtitle, meta.subtitle);
+      const status = state?.status || "idle";
+      if (statusBadge.dataset.status !== status) {
+        statusBadge.dataset.status = status;
+      }
+      setTextIfChanged(statusBadge, translateStatus(status));
+      const line = state?.summary?.generated_at
+        ? `最新结果 ${formatDateTime(state.summary.generated_at)} · 已同步 ${formatClock(lastSyncAt)}`
+        : lastSyncAt
+          ? `状态已同步 ${formatClock(lastSyncAt)}`
+          : "等待运行结果";
+      setTextIfChanged(statusLine, line);
+    }
+
+    function renderSidebar(state) {
+      const kpis = state?.summary?.kpis || {};
+      const comparison = state?.comparison || null;
+      const html = `
+        <div class="eyebrow">账户摘要</div>
+        <div class="sidebar-kpi-grid">
+          ${sidebarKpi("总权益", formatValue(kpis.equity), "wide", "big")}
+          ${sidebarKpi("已实现盈亏", formatSigned(kpis.realized_pnl))}
+          ${sidebarKpi("未实现盈亏", formatSigned(kpis.unrealized_pnl_total ?? kpis.futures_unrealized_pnl))}
+          ${sidebarKpi("成交笔数", formatValue(kpis.trade_count))}
+          ${sidebarKpi("相较上次", comparison ? `${formatSigned(comparison.return_pct_delta)}%` : "-")}
+        </div>
+        <div class="sidebar-footnote">${draftDirty ? "当前有未保存配置，运行会按草稿生效。" : "当前显示的是最近一次同步结果。"}</div>
+      `;
+      if (html !== lastSidebarHtml) {
+        sidebarPanel.innerHTML = html;
+        lastSidebarHtml = html;
+      }
+    }
+
+    function renderNotice(state) {
+      const hasError = Boolean(state?.last_error);
+      const tone = hasError ? "error" : (state?.status === "running" || state?.status === "loading") ? "warning" : "normal";
+      const summary = state?.summary || null;
+      const modeValue = summary?.mode || state?.config?.system?.mode;
+      const marketValue = summary?.market || state?.config?.system?.market;
+      const feedType = state?.market_feed_status?.type || state?.config?.feeds?.market?.type || "synthetic_cn";
+      const html = hasError
+        ? `<strong>最近一次运行出现异常</strong><div class="muted">${escapeHtml(state.last_error)}</div>`
+        : `<strong>当前运行上下文</strong><div class="meta-row">
+            <div class="meta-chip"><span>模式</span><strong>${escapeHtml(translateMode(modeValue))}</strong></div>
+            <div class="meta-chip"><span>市场</span><strong>${escapeHtml(translateMarket(marketValue))}</strong></div>
+            <div class="meta-chip"><span>行情源</span><strong>${escapeHtml(translateFeedType(feedType))}</strong></div>
+            <div class="meta-chip"><span>配置</span><strong>${escapeHtml(state?.active_config_path || state?.config_path || "-")}</strong></div>
+          </div>${feedNotice(state)}`;
+      if (notice.dataset.tone !== tone) {
+        notice.dataset.tone = tone;
+      }
+      if (tone !== lastNoticeTone || html !== lastNoticeHtml) {
+        notice.innerHTML = html;
+        lastNoticeHtml = html;
+        lastNoticeTone = tone;
+      }
+    }
+
+    function renderView(route, state, options = {}) {
+      if (["run", "agent-config"].includes(route) && draftDirty && !options.force) {
+        return;
+      }
+      const html = renderRoute(route, state);
+      if (options.force || html !== lastViewHtml) {
+        view.innerHTML = html;
+        lastViewHtml = html;
+      }
+    }
+
+    function renderRoute(route, state) {
+      if (route === "run") return renderRunWorkspace(state);
+      if (route === "agent-config") return renderAgentConfigWorkspace(state);
+      if (route === "agent-performance") return renderAgentPerformance(state);
+      if (route === "portfolio") return renderPortfolio(state?.summary || null);
+      if (route === "history") return renderHistory(state);
+      return renderOverview(state);
+    }
+
+    function renderOverview(state) {
+      const summary = state?.summary;
+      if (!summary) return empty("还没有运行结果", "先到“运行”页启动一次模拟，这里就会出现权益、风险和最新成交。");
+      const kpis = summary.kpis || {};
+      const perf = summary.performance || {};
+      const holdings = [...(summary.positions?.stocks || [])].sort((a, b) => Number(b.market_value || 0) - Number(a.market_value || 0)).slice(0, 5);
+      const fills = (summary.recent_fills || []).slice(0, 8);
+      return `<div class="view">
+        <div class="three">
+          <section class="hero">
+            <div>
+              <div class="eyebrow">Capital Snapshot</div>
+              <h3>当前组合权益</h3>
+            </div>
+            <div class="hero-value">
+              <div class="hero-number">${formatValue(kpis.equity)}</div>
+              <div class="hero-badge ${toneClass(formatSigned(perf.total_return_pct))}">${formatSigned(perf.total_return_pct)}%</div>
+            </div>
+            <div class="meta-row">
+              ${meta("可用现金", formatValue(kpis.cash_available))}
+              ${meta("总敞口", formatValue(kpis.gross_exposure))}
+              ${meta("最大回撤", `${formatValue(perf.max_drawdown_pct)}%`)}
+              ${meta("成交笔数", formatValue(kpis.trade_count))}
+            </div>
+          </section>
+          <section class="panel">
+            <div class="section-head"><div class="tag">立即判断</div></div>
+            <div class="kv-list">
+              ${kv("已实现盈亏", formatSigned(kpis.realized_pnl))}
+              ${kv("未实现盈亏", formatSigned(kpis.unrealized_pnl_total ?? kpis.futures_unrealized_pnl))}
+              ${kv("股票市值", formatValue(kpis.stock_market_value))}
+              ${kv("杠杆率", formatValue(kpis.leverage_ratio))}
+              ${kv("市场模式", `${translateMarket(summary.market)} / ${translateMode(summary.mode)}`)}
+            </div>
+          </section>
+        </div>
+        <section class="tiles">
+          ${metric("期货保证金", formatValue(kpis.futures_margin_in_use), "当前保证金占用")}
+          ${metric("总费用", formatValue(kpis.total_fees), "累计执行成本")}
+          ${metric("波动率", `${formatValue(perf.volatility_pct)}%`, "收益波动强度")}
+          ${metric("换手率", formatValue(perf.turnover_ratio), "资金轮换速度")}
+        </section>
+        <div class="three">
+          <section class="panel">
+            <div class="section-head"><div><h3 class="section-title">权益曲线</h3></div></div>
+            ${curve(summary.equity_curve || [], "equity", "最高权益", "最低权益")}
+          </section>
+          <section class="panel">
+            <div class="section-head"><div><h3 class="section-title">运行告警</h3></div></div>
+            ${alerts(summary.alerts || [])}
+          </section>
+        </div>
+        <div class="two">
+          <section class="panel">
+            <div class="section-head"><div><h3 class="section-title">当前主要持仓</h3></div></div>
+            ${table(holdings, ["symbol", "quantity", "market_value", "unrealized_pnl"], ["代码", "数量", "市值", "未实现盈亏"])}
+          </section>
+          <section class="panel">
+            <div class="section-head"><div><h3 class="section-title">最近成交</h3></div></div>
+            ${table(fills, ["timestamp", "symbol", "effect", "quantity", "price", "agent_id"], ["时间", "代码", "动作", "数量", "价格", "智能体"])}
+          </section>
+        </div>
+      </div>`;
+    }
+
+    function renderRun(state) {
+      syncDraft(state?.active_config || state?.config || {});
+      const draft = configDraft || cloneConfig({});
+      const predictedFeed = predictDraftFeedStatus(draft, state);
+      const summary = state?.summary || null;
+      return `<div class="view">
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title">先选行情源</h3>
+              <p class="muted">先判断当前数据链路，再切换到要跑的行情源。Tushare 缺 token 时会明确显示是否回退到 EasyQuotation。</p>
+            </div>
+          </div>
+          <div class="source-grid">
+            ${feedSourceCard("easyquotation_realtime", "EasyQuotation 实时", "默认推荐，本地开箱即用，适合先跑通真实行情链路。", draft, state)}
+            ${feedSourceCard("tushare_realtime", "Tushare 实时", "适合有 Token 的正式实时接入；没有 Token 时可回退到 EasyQuotation。", draft, state)}
+            ${feedSourceCard("csv_replay", "CSV 回放", "适合用外部导出的真实行情做准实盘回放验证。", draft, state)}
+            ${feedSourceCard("synthetic_cn", "模拟行情", "用于纯流程调试，不代表真实市场深度。", draft, state)}
+          </div>
+          <div class="stack-grid">
+            ${feedStatusSummary(state, draft, predictedFeed)}
+            ${runChecklist(state, draft, predictedFeed)}
+          </div>
+          ${tushareTokenAssist(draft, state, predictedFeed)}
+        </section>
+        <div class="two">
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <h3 class="section-title">基础配置</h3>
+              </div>
+              <div class="btn-row">
+                <button class="btn" data-action="reset-config">恢复配置</button>
+                <button class="btn primary" data-action="save-config">保存配置</button>
+              </div>
+            </div>
+            <div class="field-grid">
+              ${selectField("运行模式", "system.mode", getNested(draft, "system.mode", "realtime"), [["simulation", "模拟"], ["realtime", "实时"]])}
+              ${selectField("市场", "system.market", getNested(draft, "system.market", "cn"), [["cn", "中国市场"], ["us", "美国市场"]])}
+              ${numberField("初始资金", "system.capital_base", getNested(draft, "system.capital_base", 1000000), "10000", "", "10000")}
+              ${numberField("循环次数", "system.loop_iterations", getNested(draft, "system.loop_iterations", 80), "1", "", "1")}
+              ${numberField("刷新间隔(秒)", "system.poll_interval_seconds", getNested(draft, "system.poll_interval_seconds", 15), "1", "", "1")}
+              ${textField("时区", "system.timezone", getNested(draft, "system.timezone", "Asia/Shanghai"))}
+            </div>
+            <div class="section-head" style="margin-top:6px;">
+              <div>
+                <h3 class="section-title">风险预算</h3>
+              </div>
+            </div>
+            <div class="field-grid">
+              ${numberField("最大回撤", "system.risk_budget.max_drawdown", getNested(draft, "system.risk_budget.max_drawdown", 0.12), "0.01", "1", "0.01")}
+              ${numberField("VaR 限制", "system.risk_budget.var_limit", getNested(draft, "system.risk_budget.var_limit", 0.08), "0.01", "1", "0.01")}
+              ${numberField("暴露限制", "system.risk_budget.exposure_limit", getNested(draft, "system.risk_budget.exposure_limit", 1), "0.1", "3", "0.1")}
+            </div>
+          </section>
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <h3 class="section-title">运行状态</h3>
+              </div>
+            </div>
+            <div class="kv-list">
+              ${kv("基础配置", state?.config_path || "-")}
+              ${kv("当前生效配置", state?.active_config_path || "-")}
+              ${kv("模式", translateMode(summary?.mode || state?.config?.system?.mode))}
+              ${kv("市场", translateMarket(summary?.market || state?.config?.system?.market))}
+              ${kv("数据源", summary?.data_source?.market_feed_type || translateFeedType(state?.market_feed_status?.type))}
+              ${kv("链路状态", translateFeedReadyMode(state?.market_feed_status))}
+              ${kv("上次同步", lastSyncAt ? formatClock(lastSyncAt) : "-")}
+            </div>
+          </section>
+        </div>
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title">风控参数</h3>
+            </div>
+          </div>
+          <div class="field-grid">
+            ${checkField("启用 Kill Switch", "risk_engine.controls.kill_switch", getNested(draft, "risk_engine.controls.kill_switch", false))}
+            ${numberField("熔断阈值", "risk_engine.controls.circuit_breaker", getNested(draft, "risk_engine.controls.circuit_breaker", 0.05), "0.01", "0.5", "0.01")}
+            ${numberField("仓位限制", "risk_engine.controls.position_limit_pct", getNested(draft, "risk_engine.controls.position_limit_pct", 0.35), "0.01", "1", "0.01")}
+            ${numberField("最小置信度", "risk_engine.controls.min_confidence", getNested(draft, "risk_engine.controls.min_confidence", 0.45), "0", "1", "0.01")}
+            ${numberField("最大波动率", "risk_engine.controls.max_volatility", getNested(draft, "risk_engine.controls.max_volatility", 0.8), "0.1", "10", "0.1")}
+            ${numberField("最大股票仓位", "risk_engine.controls.max_stock_position_pct", getNested(draft, "risk_engine.controls.max_stock_position_pct", 0.3), "0.01", "1", "0.01")}
+            ${numberField("单品种期货手数上限", "risk_engine.controls.max_futures_contracts_per_symbol", getNested(draft, "risk_engine.controls.max_futures_contracts_per_symbol", 2), "1", "", "1")}
+            ${numberField("期货保证金上限", "risk_engine.controls.max_futures_margin_pct", getNested(draft, "risk_engine.controls.max_futures_margin_pct", 0.28), "0.01", "1", "0.01")}
+            ${numberField("期货名义仓位上限", "risk_engine.controls.max_futures_notional_pct", getNested(draft, "risk_engine.controls.max_futures_notional_pct", 0.7), "0.01", "3", "0.01")}
+            ${numberField("总风险敞口上限", "risk_engine.controls.max_gross_exposure_pct", getNested(draft, "risk_engine.controls.max_gross_exposure_pct", 0.95), "0.01", "3", "0.01")}
+          </div>
+        </section>
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title">行情高级参数</h3>
+            </div>
+          </div>
+          <div class="field-grid">
+            ${textField("Tushare Token", "feeds.market.token", getNested(draft, "feeds.market.token", ""))}
+            ${textField("CSV 路径", "feeds.market.path", getNested(draft, "feeds.market.path", ""))}
+            ${numberField("CSV 回放间隔(秒)", "feeds.market.replay_interval_seconds", getNested(draft, "feeds.market.replay_interval_seconds", 0), "0", "", "0.1")}
+            ${textField("Symbol 字段", "feeds.market.symbol_field", getNested(draft, "feeds.market.symbol_field", "symbol"))}
+            ${textField("Price 字段", "feeds.market.price_field", getNested(draft, "feeds.market.price_field", "price"))}
+            ${textField("Volume 字段", "feeds.market.volume_field", getNested(draft, "feeds.market.volume_field", "volume"))}
+            ${numberField("特征窗口", "feeds.market.feature_window", getNested(draft, "feeds.market.feature_window", 20), "3", "", "1")}
+          </div>
+        </section>
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title">策略工厂</h3>
+            </div>
+          </div>
+          <div class="field-grid">
+            ${checkField("启用自动生成", "strategy_factory.autogen.enabled", getNested(draft, "strategy_factory.autogen.enabled", false))}
+            ${numberField("最大候选策略数", "strategy_factory.autogen.max_candidates", getNested(draft, "strategy_factory.autogen.max_candidates", 12), "1", "100", "1")}
+            ${textField("策略模板(逗号分隔)", "strategy_factory.templates", (getNested(draft, "strategy_factory.templates", []) || []).join(", "), "list")}
+          </div>
+        </section>
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title">行情接入参数</h3>
+            </div>
+          </div>
+          <div class="field-grid">
+            ${selectField("行情源", "feeds.market.type", getNested(draft, "feeds.market.type", "synthetic_cn"), [["synthetic_cn", "模拟行情"], ["tushare_realtime", "Tushare 实时"], ["easyquotation_realtime", "EasyQuotation 实时"], ["csv_replay", "CSV 回放"]])}
+            ${textField("标的列表(逗号分隔)", "feeds.market.symbols", (getNested(draft, "feeds.market.symbols", []) || []).join(", "), "list")}
+            ${numberField("行情轮询秒数", "feeds.market.poll_interval_seconds", getNested(draft, "feeds.market.poll_interval_seconds", 15), "0", "", "1")}
+            ${textField("Tushare Token 环境变量", "feeds.market.token_env", getNested(draft, "feeds.market.token_env", "TUSHARE_TOKEN"))}
+            ${selectField("实时回退源", "feeds.market.fallback_provider", getNested(draft, "feeds.market.fallback_provider", "easyquotation"), [["easyquotation", "easyquotation"], ["none", "不回退"]])}
+            ${selectField("EasyQuotation Provider", "feeds.market.provider", getNested(draft, "feeds.market.provider", "sina"), [["sina", "新浪"], ["tencent", "腾讯"]])}
+          </div>
+        </section>
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title">智能体配置入口</h3>
+              <p class="muted">运行页只保留摘要，完整增删改放到“智能体”页，避免配置区过长。</p>
+            </div>
+            <div class="btn-row">
+              <button class="btn" data-action="add-agent">新增智能体</button>
+              <button class="btn" data-action="go-agent-config">进入智能体配置页</button>
+              <button class="btn" data-action="go-agent-performance">进入智能体表现页</button>
+            </div>
+          </div>
+          ${agentQuickSummary(draft, summary)}
+        </section>
+      </div>`;
+    }
+
+    function renderAgentConfig(state) {
+      syncDraft(state?.active_config || state?.config || {});
+      const draft = configDraft || cloneConfig({});
+      return `<div class="view">
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title">智能体配置</h3>
+              <p class="muted">这里单独维护智能体列表、角色和资金占比，不再和运行页混在一起。</p>
+            </div>
+            <div class="btn-row">
+              <button class="btn" data-action="add-agent">新增智能体</button>
+              <button class="btn" data-action="reset-config">恢复配置</button>
+              <button class="btn primary" data-action="save-config">保存配置</button>
+              <button class="btn" data-action="go-agent-performance">查看表现页</button>
+            </div>
+          </div>
+          ${agentConfig(getNested(draft, "agents.registry", []))}
+        </section>
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title">配置摘要</h3>
+              <p class="muted">这里只看当前草稿本身，不混入运行表现。</p>
+            </div>
+          </div>
+          ${agentQuickSummary(draft, state?.summary || null)}
+        </section>
+      </div>`;
+    }
+
+    function renderRunWorkspace(state) {
+      syncDraft(state?.active_config || state?.config || {});
+      const draft = configDraft || cloneConfig({});
+      const predictedFeed = predictDraftFeedStatus(draft, state);
+      const summary = state?.summary || null;
+      return `<div class="view">
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title">先选行情源</h3>
+              <p class="muted">先判断当前数据链路，再切换到要跑的行情源。Tushare 缺 token 时会明确显示是否回退到 EasyQuotation。</p>
+            </div>
+          </div>
+          <div class="source-grid">
+            ${feedSourceCard("easyquotation_realtime", "EasyQuotation 实时", "默认推荐，本地开箱即用，适合先跑通真实行情链路。", draft, state)}
+            ${feedSourceCard("tushare_realtime", "Tushare 实时", "适合有 Token 的正式实时接入；没有 Token 时可回退到 EasyQuotation。", draft, state)}
+            ${feedSourceCard("csv_replay", "CSV 回放", "适合用外部导出的真实行情做准实盘回放验证。", draft, state)}
+            ${feedSourceCard("synthetic_cn", "模拟行情", "用于纯流程调试，不代表真实市场深度。", draft, state)}
+          </div>
+          <div class="stack-grid">
+            ${feedStatusSummary(state, draft, predictedFeed)}
+            ${runChecklist(state, draft, predictedFeed)}
+          </div>
+          ${tushareTokenAssist(draft, state, predictedFeed)}
+        </section>
+        <div class="two">
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <h3 class="section-title">基础配置</h3>
+              </div>
+              <div class="btn-row">
+                <button class="btn" data-action="reset-config">恢复配置</button>
+                <button class="btn primary" data-action="save-config">保存配置</button>
+              </div>
+            </div>
+            <div class="config-stack">
+              ${formSection("账户与运行节奏", "决定资金基数、轮询节奏和运行模式。", `<div class="field-grid">
+                ${selectField("运行模式", "system.mode", getNested(draft, "system.mode", "realtime"), [["simulation", "模拟"], ["realtime", "实时"]])}
+                ${selectField("市场", "system.market", getNested(draft, "system.market", "cn"), [["cn", "中国市场"], ["us", "美国市场"]])}
+                ${numberField("初始资金", "system.capital_base", getNested(draft, "system.capital_base", 1000000), "10000", "", "10000")}
+                ${numberField("循环次数", "system.loop_iterations", getNested(draft, "system.loop_iterations", 80), "1", "", "1")}
+                ${numberField("刷新间隔(秒)", "system.poll_interval_seconds", getNested(draft, "system.poll_interval_seconds", 15), "1", "", "1")}
+                ${textField("时区", "system.timezone", getNested(draft, "system.timezone", "Asia/Shanghai"))}
+              </div>`)}
+              ${formSection("账户级风险预算", "先把账户层面的回撤、VaR 和敞口上限定清楚。", `<div class="field-grid">
+                ${numberField("最大回撤", "system.risk_budget.max_drawdown", getNested(draft, "system.risk_budget.max_drawdown", 0.12), "0.01", "1", "0.01")}
+                ${numberField("VaR 限制", "system.risk_budget.var_limit", getNested(draft, "system.risk_budget.var_limit", 0.08), "0.01", "1", "0.01")}
+                ${numberField("敞口限制", "system.risk_budget.exposure_limit", getNested(draft, "system.risk_budget.exposure_limit", 1), "0.1", "3", "0.1")}
+              </div>`)}
+            </div>
+          </section>
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <h3 class="section-title">运行状态</h3>
+              </div>
+            </div>
+            <div class="kv-list">
+              ${kv("基础配置", state?.config_path || "-")}
+              ${kv("当前生效配置", state?.active_config_path || "-")}
+              ${kv("模式", translateMode(summary?.mode || state?.config?.system?.mode))}
+              ${kv("市场", translateMarket(summary?.market || state?.config?.system?.market))}
+              ${kv("数据源", summary?.data_source?.market_feed_type || translateFeedType(state?.market_feed_status?.type))}
+              ${kv("链路状态", translateFeedReadyMode(state?.market_feed_status))}
+              ${kv("上次同步", lastSyncAt ? formatClock(lastSyncAt) : "-")}
+            </div>
+          </section>
+        </div>
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title">风控与策略</h3>
+            </div>
+          </div>
+          <div class="config-stack">
+            ${formSection("风控阈值与仓位约束", "这些参数会直接影响下单阈值和总风险敞口。", `<div class="field-grid">
+              ${checkField("启用 Kill Switch", "risk_engine.controls.kill_switch", getNested(draft, "risk_engine.controls.kill_switch", false))}
+              ${numberField("熔断阈值", "risk_engine.controls.circuit_breaker", getNested(draft, "risk_engine.controls.circuit_breaker", 0.05), "0.01", "0.5", "0.01")}
+              ${numberField("仓位限制", "risk_engine.controls.position_limit_pct", getNested(draft, "risk_engine.controls.position_limit_pct", 0.35), "0.01", "1", "0.01")}
+              ${numberField("最小置信度", "risk_engine.controls.min_confidence", getNested(draft, "risk_engine.controls.min_confidence", 0.45), "0", "1", "0.01")}
+              ${numberField("最大波动率", "risk_engine.controls.max_volatility", getNested(draft, "risk_engine.controls.max_volatility", 0.8), "0.1", "10", "0.1")}
+              ${numberField("最大股票仓位", "risk_engine.controls.max_stock_position_pct", getNested(draft, "risk_engine.controls.max_stock_position_pct", 0.3), "0.01", "1", "0.01")}
+              ${numberField("单品种期货手数上限", "risk_engine.controls.max_futures_contracts_per_symbol", getNested(draft, "risk_engine.controls.max_futures_contracts_per_symbol", 2), "1", "", "1")}
+              ${numberField("期货保证金上限", "risk_engine.controls.max_futures_margin_pct", getNested(draft, "risk_engine.controls.max_futures_margin_pct", 0.28), "0.01", "1", "0.01")}
+              ${numberField("期货名义仓位上限", "risk_engine.controls.max_futures_notional_pct", getNested(draft, "risk_engine.controls.max_futures_notional_pct", 0.7), "0.01", "3", "0.01")}
+              ${numberField("总风险敞口上限", "risk_engine.controls.max_gross_exposure_pct", getNested(draft, "risk_engine.controls.max_gross_exposure_pct", 0.95), "0.01", "3", "0.01")}
+            </div>`)}
+            ${formSection("策略工厂", "决定是否自动生成策略，以及候选池的范围。", `<div class="field-grid">
+              ${checkField("启用自动生成", "strategy_factory.autogen.enabled", getNested(draft, "strategy_factory.autogen.enabled", false))}
+              ${numberField("最大候选策略数", "strategy_factory.autogen.max_candidates", getNested(draft, "strategy_factory.autogen.max_candidates", 12), "1", "100", "1")}
+              ${textField("策略模板(逗号分隔)", "strategy_factory.templates", (getNested(draft, "strategy_factory.templates", []) || []).join(", "), "list")}
+            </div>`)}
+          </div>
+        </section>
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title">行情接入参数</h3>
+            </div>
+          </div>
+          <div class="config-stack">
+            ${formSection("数据源和轮询策略", "先确定行情源、标的列表和轮询频率，再决定回退控制。", `<div class="field-grid">
+              ${selectField("行情源", "feeds.market.type", getNested(draft, "feeds.market.type", "synthetic_cn"), [["synthetic_cn", "模拟行情"], ["tushare_realtime", "Tushare 实时"], ["easyquotation_realtime", "EasyQuotation 实时"], ["csv_replay", "CSV 回放"]])}
+              ${textField("标的列表(逗号分隔)", "feeds.market.symbols", (getNested(draft, "feeds.market.symbols", []) || []).join(", "), "list")}
+              ${numberField("行情轮询秒数", "feeds.market.poll_interval_seconds", getNested(draft, "feeds.market.poll_interval_seconds", 15), "0", "", "1")}
+              ${textField("Tushare Token 环境变量", "feeds.market.token_env", getNested(draft, "feeds.market.token_env", "TUSHARE_TOKEN"))}
+              ${selectField("实时回退源", "feeds.market.fallback_provider", getNested(draft, "feeds.market.fallback_provider", "easyquotation"), [["easyquotation", "easyquotation"], ["none", "不回退"]])}
+              ${selectField("EasyQuotation Provider", "feeds.market.provider", getNested(draft, "feeds.market.provider", "sina"), [["sina", "新浪"], ["tencent", "腾讯"]])}
+            </div>`)}
+            ${formSection("Token / CSV / 字段映射", "只把真正影响入数的高级字段放在这一块，避免页面变成长表单。", `<div class="field-grid">
+              ${textField("Tushare Token", "feeds.market.token", getNested(draft, "feeds.market.token", ""))}
+              ${textField("CSV 路径", "feeds.market.path", getNested(draft, "feeds.market.path", ""))}
+              ${numberField("CSV 回放间隔(秒)", "feeds.market.replay_interval_seconds", getNested(draft, "feeds.market.replay_interval_seconds", 0), "0", "", "0.1")}
+              ${textField("Symbol 字段", "feeds.market.symbol_field", getNested(draft, "feeds.market.symbol_field", "symbol"))}
+              ${textField("Price 字段", "feeds.market.price_field", getNested(draft, "feeds.market.price_field", "price"))}
+              ${textField("Volume 字段", "feeds.market.volume_field", getNested(draft, "feeds.market.volume_field", "volume"))}
+              ${numberField("特征窗口", "feeds.market.feature_window", getNested(draft, "feeds.market.feature_window", 20), "3", "", "1")}
+            </div>`)}
+          </div>
+        </section>
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title">智能体配置入口</h3>
+              <p class="muted">运行页只保留摘要，完整增删改放到“智能体”页，避免配置区过长。</p>
+            </div>
+            <div class="btn-row">
+              <button class="btn" data-action="add-agent">新增智能体</button>
+              <button class="btn" data-action="go-agent-config">进入智能体配置页</button>
+              <button class="btn" data-action="go-agent-performance">进入智能体表现页</button>
+            </div>
+          </div>
+          ${agentQuickSummary(draft, summary)}
+        </section>
+      </div>`;
+    }
+
+    function renderAgentConfigWorkspace(state) {
+      syncDraft(state?.active_config || state?.config || {});
+      const draft = configDraft || cloneConfig({});
+      return `<div class="view">
+        <div class="two equal-panels">
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <h3 class="section-title">配置提要</h3>
+                <p class="muted">先看智能体数量、启用状态和资金配比是否合理。</p>
+              </div>
+            </div>
+            ${agentConfigHealth(draft)}
+          </section>
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <h3 class="section-title">配置摘要</h3>
+                <p class="muted">这里只看当前草稿本身，不混入运行表现。</p>
+              </div>
+            </div>
+            ${agentQuickSummary(draft, state?.summary || null)}
+          </section>
+        </div>
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title">智能体配置</h3>
+              <p class="muted">把 ID、角色、启停和资金配比集中在一个工作区，编辑时不会被自动刷新打断。</p>
+            </div>
+            <div class="btn-row">
+              <button class="btn" data-action="add-agent">新增智能体</button>
+              <button class="btn" data-action="reset-config">恢复配置</button>
+              <button class="btn primary" data-action="save-config">保存配置</button>
+              <button class="btn" data-action="go-agent-performance">查看表现页</button>
+            </div>
+          </div>
+          ${agentConfig(getNested(draft, "agents.registry", []))}
+        </section>
+      </div>`;
+    }
+
+    function renderAgentPerformance(state) {
+      const summary = state?.summary || null;
+      const attr = summary?.agent_attribution || {};
+      const rank = attr.ranking || [];
+      return `<div class="view">
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title">智能体表现总览</h3>
+              <p class="muted">这一页只保留表现数据，不混入编辑表单。</p>
+            </div>
+            <div class="btn-row">
+              <button class="btn" data-action="go-agent-config">回到配置页</button>
+            </div>
+          </div>
+        </section>
+        <div class="two">
+          ${spotlight("当前最优智能体", attr.top_winner)}
+          ${spotlight("当前最弱智能体", attr.top_loser)}
+        </div>
+        <section class="panel">
+          <div class="section-head"><div><h3 class="section-title">智能体 NAV 曲线</h3></div></div>
+          ${summary ? agentCurve(summary.agent_contribution_curves || {}, attr) : `<p class="empty">先运行一次，这里才会出现智能体 NAV 曲线。</p>`}
+        </section>
+        <section class="panel">
+          <div class="section-head"><div><h3 class="section-title">贡献排行</h3></div></div>
+          ${summary ? table(rank, ["rank", "agent_id", "role", "nav", "return_pct", "net_pnl", "realized_pnl", "unrealized_pnl", "trade_count", "effect_breakdown"], ["排名", "智能体", "角色", "NAV", "收益率 %", "净盈亏", "已实现盈亏", "未实现盈亏", "成交笔数", "行为拆解"]) : `<p class="empty">还没有智能体运行结果。</p>`}
+        </section>
+      </div>`;
+    }
+
+    function renderPortfolio(summary) {
+      if (!summary) return empty("还没有持仓账本", "运行完成后，这里会单独展示持仓、盈亏和成交，不再和参数、历史混在一起。");
+      const kpis = summary.kpis || {};
+      const rank = summary.agent_attribution?.ranking || [];
+      return `<div class="view">
+        <section class="tiles">
+          ${metric("组合权益", formatValue(kpis.equity), "账户总权益")}
+          ${metric("已实现盈亏", formatSigned(kpis.realized_pnl), "已落地收益")}
+          ${metric("未实现盈亏", formatSigned(kpis.unrealized_pnl_total ?? kpis.futures_unrealized_pnl), "浮动盈亏")}
+          ${metric("股票市值", formatValue(kpis.stock_market_value), "股票仓位价值")}
+          ${metric("可用现金", formatValue(kpis.cash_available), "当前可用资金")}
+        </section>
+        <div class="two">
+          <section class="panel">
+            <div class="section-head"><div><h3 class="section-title">股票持仓</h3></div></div>
+            ${table(summary.positions?.stocks || [], ["symbol", "quantity", "avg_price", "last_price", "market_value", "unrealized_pnl"], ["代码", "数量", "均价", "现价", "市值", "未实现盈亏"])}
+          </section>
+          <section class="panel">
+            <div class="section-head"><div><h3 class="section-title">期货持仓</h3></div></div>
+            ${table(summary.positions?.futures || [], ["symbol", "long_qty", "short_qty", "last_price", "unrealized_pnl"], ["代码", "多头", "空头", "现价", "未实现盈亏"])}
+          </section>
+        </div>
+        <section class="panel">
+          <div class="section-head"><div><h3 class="section-title">智能体资金归因</h3></div></div>
+          ${table(rank, ["agent_id", "role", "effective_capital_ratio", "nav", "net_pnl", "trade_count", "total_notional"], ["智能体", "角色", "资金占比", "NAV", "净盈亏", "成交笔数", "成交额"])}
+        </section>
+        <section class="panel">
+          <div class="section-head"><div><h3 class="section-title">最近成交流水</h3></div></div>
+          ${table(summary.recent_fills || [], ["timestamp", "symbol", "stock_name", "effect", "quantity", "price", "notional", "realized_pnl", "agent_id"], ["时间", "代码", "名称", "动作", "数量", "价格", "成交额", "已实现盈亏", "智能体"])}
+        </section>
+      </div>`;
+    }
+
+    function renderHistory(state) {
+      const summary = state?.summary || null;
+      const cmp = state?.comparison || null;
+      return `<div class="view">
+        <section class="tiles">
+          ${metric("权益变化", cmp ? formatSigned(cmp.equity_delta) : "-", "相较上一轮")}
+          ${metric("收益率变化", cmp ? formatSigned(cmp.return_pct_delta) : "-", "百分点变化")}
+          ${metric("回撤变化", cmp ? formatSigned(cmp.max_drawdown_pct_delta) : "-", "百分点变化")}
+          ${metric("成交笔数变化", cmp ? formatSigned(cmp.trade_count_delta) : "-", "相比上一轮")}
+          ${metric("杠杆变化", cmp ? formatSigned(cmp.leverage_ratio_delta) : "-", "相比上一轮")}
+        </section>
+        <section class="panel">
+          <div class="section-head"><div><h3 class="section-title">运行历史</h3></div></div>
+          ${table(state?.history || [], ["run_id", "generated_at", "mode", "ticks_processed", "equity", "total_return_pct", "max_drawdown_pct", "trade_count"], ["运行 ID", "生成时间", "模式", "Tick 数", "总权益", "收益率 %", "最大回撤 %", "成交笔数"])}
+        </section>
+        <div class="two">
+          <section class="panel">
+            <div class="section-head"><div><h3 class="section-title">Ablation 对比</h3></div></div>
+            ${ablation(summary?.ablation_report || null)}
+          </section>
+          <section class="panel">
+            <div class="section-head"><div><h3 class="section-title">当前告警清单</h3></div></div>
+            ${table(summary?.alerts || [], ["severity", "code", "agent_id", "message"], ["级别", "代码", "智能体", "说明"])}
+          </section>
+        </div>
+      </div>`;
+    }
+
+    function empty(title, desc) {
+      return `<div class="view"><section class="panel"><div class="section-head"><div><h3 class="section-title">${escapeHtml(title)}</h3><p class="muted">${escapeHtml(desc)}</p></div></div><p class="empty">当前页面会在第一次运行完成后自动填充。</p></section></div>`;
+    }
+
+    function kv(label, value) {
+      return `<div class="kv"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`;
+    }
+
+    function sidebarKpi(label, value, span = "", tone = "") {
+      const spanAttr = span ? ` data-span="${escapeHtml(span)}"` : "";
+      const strongClass = tone ? ` class="${escapeHtml(tone)}"` : "";
+      return `<div class="sidebar-kpi"${spanAttr}><span>${escapeHtml(label)}</span><strong${strongClass} title="${escapeHtml(value)}">${escapeHtml(value)}</strong></div>`;
+    }
+
+    function meta(label, value) {
+      return `<div class="meta-chip"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`;
+    }
+
+    function metric(label, value, note) {
+      return `<section class="metric"><span class="muted">${escapeHtml(label)}</span><strong class="${toneClass(value)}">${escapeHtml(value)}</strong><span class="muted">${escapeHtml(note)}</span></section>`;
+    }
+
+    function formSection(title, desc, body) {
+      return `<div class="config-section">
+        <div class="config-section-head">
+          <h4>${escapeHtml(title)}</h4>
+          <p>${escapeHtml(desc)}</p>
+        </div>
+        ${body}
+      </div>`;
+    }
+
+    function feedSourceCard(type, title, note, draft, state) {
+      const selectedType = getNested(draft, "feeds.market.type", "synthetic_cn");
+      const feedStatus = predictDraftFeedStatus({ ...draft, feeds: { ...(draft.feeds || {}), market: { ...((draft.feeds || {}).market || {}), type } } }, state);
+      const isCurrent = selectedType === type;
+      const tone = currentFeedCardTone(type, feedStatus);
+      return `<button class="source-card ${isCurrent ? "active" : ""}" type="button" data-feed-select="${escapeHtml(type)}">
+        <div class="pill-row">
+          <span class="mini-pill ${escapeHtml(tone)}">${escapeHtml(feedSourceCardStatus(type, feedStatus))}</span>
+          ${isCurrent ? `<span class="mini-pill">当前草稿</span>` : ""}
+        </div>
+        <strong>${escapeHtml(title)}</strong>
+        <p>${escapeHtml(note)}</p>
+      </button>`;
+    }
+
+    function feedStatusSummary(state, draft, feedStatus) {
+      const draftType = getNested(draft, "feeds.market.type", "synthetic_cn");
+      const supportedSymbols = Array.isArray(feedStatus.supported_symbols) && feedStatus.supported_symbols.length
+        ? feedStatus.supported_symbols
+        : getNested(draft, "feeds.market.symbols", []);
+      const unsupportedSymbols = Array.isArray(feedStatus.unsupported_symbols) ? feedStatus.unsupported_symbols : [];
+      return `<section class="summary-box">
+        <h4>当前链路判断</h4>
+        <div class="pill-row">
+          <span class="mini-pill ${escapeHtml(currentFeedCardTone(draftType, feedStatus))}">${escapeHtml(translateFeedReadyMode(feedStatus))}</span>
+          <span class="mini-pill">${escapeHtml(translateFeedType(draftType))}</span>
+          ${feedStatus.fallback_ready ? `<span class="mini-pill warn">已启用回退</span>` : ""}
+        </div>
+        <p>${escapeHtml(feedStatus.message || "当前还没有可判断的行情状态。")}</p>
+        <div class="kv-list">
+          ${kv("可用标的", supportedSymbols.length ? supportedSymbols.join(", ") : "-")}
+          ${kv("不支持标的", unsupportedSymbols.length ? unsupportedSymbols.join(", ") : "-")}
+          ${kv("Token 环境变量", feedStatus.token_env || getNested(draft, "feeds.market.token_env", "TUSHARE_TOKEN"))}
+          ${kv("回退源", feedStatus.fallback_provider || getNested(draft, "feeds.market.fallback_provider", "easyquotation"))}
+        </div>
+      </section>`;
+    }
+
+    function runChecklist(state, draft, feedStatus) {
+      const feedType = getNested(draft, "feeds.market.type", "synthetic_cn");
+      const checklist = [
+        ["运行模式", translateMode(getNested(draft, "system.mode", "realtime"))],
+        ["当前市场", translateMarket(getNested(draft, "system.market", "cn"))],
+        ["轮询秒数", `${formatValue(getNested(draft, "feeds.market.poll_interval_seconds", 15))} 秒`],
+        ["当前标的", (getNested(draft, "feeds.market.symbols", []) || []).join(", ") || "-"],
+        ["最近结果", state?.summary?.generated_at ? formatDateTime(state.summary.generated_at) : "还没有结果"],
+        ["建议动作", suggestedAction(feedType, feedStatus)]
+      ];
+      return `<section class="summary-box">
+        <h4>启动前检查</h4>
+        <p>这块只保留真正影响运行的判断信息，避免在一页里被无关卡片淹没。</p>
+        <div class="kv-list">${checklist.map(([label, value]) => kv(label, value)).join("")}</div>
+      </section>`;
+    }
+
+    function tushareTokenAssist(draft, state, feedStatus) {
+      const draftType = getNested(draft, "feeds.market.type", "synthetic_cn");
+      const tokenEnv = feedStatus?.token_env || state?.market_feed_capabilities?.tushare?.token_env || "TUSHARE_TOKEN";
+      const hasToken = Boolean(feedStatus?.has_token);
+      const isTushare = draftType === "tushare_realtime";
+      const tone = hasToken ? "good" : "warning";
+      const title = hasToken ? "Tushare Token 已就绪" : "Tushare Token 引导";
+      const desc = hasToken
+        ? "当前草稿已经具备 Tushare 直连所需的 token 条件，保存后可以直接尝试直连。"
+        : isTushare
+          ? "你现在选的是 Tushare 实时，但当前没有检测到 token。保存后系统会按回退链判断。"
+          : "如果后面准备切到 Tushare 实时，建议先把 token 配好，再保存并启动。";
+      return `<section class="token-banner" data-tone="${escapeHtml(tone)}">
+        <div class="section-head">
+          <div>
+            <h3 class="section-title">${escapeHtml(title)}</h3>
+            <p class="muted">${escapeHtml(desc)}</p>
+          </div>
+        </div>
+        <div class="pill-row">
+          <span class="mini-pill ${hasToken ? "good" : "warn"}">${hasToken ? "已检测到 token" : "未检测到 token"}</span>
+          <span class="mini-pill">${escapeHtml(tokenEnv)}</span>
+          ${feedStatus?.ready_mode === "fallback" ? `<span class="mini-pill warn">当前会走回退链</span>` : ""}
+        </div>
+        <code>$env:${escapeHtml(tokenEnv)}=\"your-token\"</code>
+      </section>`;
+    }
+
+    function agentQuickSummary(draft, summary) {
+      const registry = getNested(draft, "agents.registry", []);
+      const enabledAgents = registry.filter((agent) => agent.enabled);
+      const totalRatio = enabledAgents.reduce((sum, agent) => sum + Number(agent.capital_ratio || 0), 0);
+      const topWinner = summary?.agent_attribution?.top_winner?.agent_id || "-";
+      const topLoser = summary?.agent_attribution?.top_loser?.agent_id || "-";
+      return `<div class="stack-grid">
+        <section class="summary-box">
+          <h4>当前草稿</h4>
+          <div class="kv-list">
+            ${kv("智能体总数", formatValue(registry.length))}
+            ${kv("已启用", formatValue(enabledAgents.length))}
+            ${kv("资金占比合计", formatValue(totalRatio))}
+            ${kv("最近最优", topWinner)}
+          </div>
+        </section>
+        <section class="summary-box">
+          <h4>最近运行表现</h4>
+          <div class="kv-list">
+            ${kv("最近最弱", topLoser)}
+            ${kv("最近成交数", formatValue(summary?.kpis?.trade_count))}
+            ${kv("最近权益", formatValue(summary?.kpis?.equity))}
+            ${kv("下一步", "如需编辑完整列表，请进入智能体页")}
+          </div>
+        </section>
+      </div>`;
+    }
+
+    function agentConfigHealth(draft) {
+      const registry = getNested(draft, "agents.registry", []);
+      const enabledAgents = registry.filter((agent) => agent.enabled);
+      const totalRatio = enabledAgents.reduce((sum, agent) => sum + Number(agent.capital_ratio || 0), 0);
+      const ratioState = totalRatio > 1 ? "超配" : totalRatio >= 0.9 ? "基本合理" : "偏保守";
+      const roles = [...new Set(enabledAgents.map((agent) => translateRole(agent.role)).filter(Boolean))];
+      return `<div class="config-stack">
+        ${formSection("启用与配比检查", "把启用数量和资金占比合计放在一起，方便先判断再编辑。", `<div class="kv-list">
+          ${kv("智能体总数", formatValue(registry.length))}
+          ${kv("已启用数", formatValue(enabledAgents.length))}
+          ${kv("资金占比合计", `${formatValue(totalRatio)} / 1.00`)}
+          ${kv("当前状态", ratioState)}
+        </div>`)}
+        ${formSection("已覆盖角色", "启用中的角色会在这里集中显示，方便检查是否过于单一。", `<div class="pill-row">
+          ${(roles.length ? roles : ["暂无启用角色"]).map((role) => `<span class="mini-pill">${escapeHtml(role)}</span>`).join("")}
+        </div>`)}
+      </div>`;
+    }
+
+    function currentFeedCardTone(type, feedStatus) {
+      if ((feedStatus?.type || "") !== type) return "";
+      const mode = feedStatus?.ready_mode || (feedStatus?.ready ? "direct" : "unavailable");
+      if (mode === "direct") return "good";
+      if (mode === "fallback") return "warn";
+      return feedStatus?.ready ? "good" : "bad";
+    }
+
+    function feedSourceCardStatus(type, feedStatus) {
+      if ((feedStatus?.type || "") !== type) return "可切换";
+      return translateFeedReadyMode(feedStatus);
+    }
+
+    function predictDraftFeedStatus(draft, state) {
+      const market = getNested(draft, "feeds.market", {}) || {};
+      const type = String(market.type || "synthetic_cn");
+      const symbols = Array.isArray(market.symbols) ? market.symbols : [];
+      const capabilities = state?.market_feed_capabilities || {};
+      const currentFeedStatus = state?.market_feed_status || {};
+      const supportedSymbols = filterSupportedSymbols(symbols);
+      const unsupportedSymbols = symbols.filter((symbol) => !supportedSymbols.includes(symbol));
+      if (type === "synthetic_cn") {
+        return { type, ready: true, ready_mode: "direct", message: "模拟行情始终可用，适合流程调试。", supported_symbols: supportedSymbols, unsupported_symbols: unsupportedSymbols };
+      }
+      if (type === "csv_replay") {
+        const hasPath = Boolean(String(market.path || "").trim());
+        return {
+          type,
+          ready: hasPath,
+          ready_mode: hasPath ? "direct" : "unavailable",
+          message: hasPath ? "已填写 CSV 路径，保存后可按该路径验证回放文件。" : "请先填写 CSV 路径，再保存并启动回放。",
+          supported_symbols: supportedSymbols,
+          unsupported_symbols: unsupportedSymbols
+        };
+      }
+      if (type === "easyquotation_realtime") {
+        const hasPackage = Boolean(capabilities?.easyquotation?.has_package ?? (currentFeedStatus.type === type ? currentFeedStatus.has_package : false));
+        const ready = hasPackage && supportedSymbols.length > 0;
+        return {
+          type,
+          ready,
+          ready_mode: ready ? "direct" : "unavailable",
+          message: ready
+            ? (unsupportedSymbols.length ? `EasyQuotation 可运行，但会忽略不支持的标的: ${unsupportedSymbols.join(", ")}` : "EasyQuotation 实时行情可直接运行。")
+            : (hasPackage ? "当前没有 EasyQuotation 支持的标的。" : "未检测到 easyquotation 包。"),
+          supported_symbols: supportedSymbols,
+          unsupported_symbols: unsupportedSymbols,
+          provider: market.provider || "sina"
+        };
+      }
+      if (type === "tushare_realtime") {
+        const hasTusharePackage = Boolean(capabilities?.tushare?.has_package ?? (currentFeedStatus.type === type ? currentFeedStatus.has_package : false));
+        const hasEasyquotationPackage = Boolean(capabilities?.easyquotation?.has_package ?? (currentFeedStatus.type === "easyquotation_realtime" ? currentFeedStatus.has_package : false));
+        const hasToken = Boolean(String(market.token || "").trim()) || Boolean(capabilities?.tushare?.has_env_token ?? (currentFeedStatus.type === type ? currentFeedStatus.has_token : false));
+        const fallbackProvider = String(market.fallback_provider || "easyquotation");
+        const directReady = hasTusharePackage && hasToken && supportedSymbols.length > 0;
+        const fallbackReady = fallbackProvider === "easyquotation" && hasEasyquotationPackage && supportedSymbols.length > 0;
+        return {
+          type,
+          ready: directReady || fallbackReady,
+          ready_mode: directReady ? "direct" : fallbackReady ? "fallback" : "unavailable",
+          message: directReady
+            ? "Tushare 直连条件齐备，保存后可直接走 Tushare。"
+            : fallbackReady
+              ? "当前未检测到可用 Token，保存后将优先尝试 Tushare，失败时回退到 EasyQuotation。"
+              : "Tushare 当前既没有直连条件，也没有可用回退链。",
+          supported_symbols: supportedSymbols,
+          unsupported_symbols: unsupportedSymbols,
+          fallback_provider: fallbackProvider,
+          fallback_ready: fallbackReady,
+          token_env: market.token_env || capabilities?.tushare?.token_env || "TUSHARE_TOKEN",
+          has_token: hasToken
+        };
+      }
+      return { type, ready: false, ready_mode: "unavailable", message: `未知行情源类型: ${type}`, supported_symbols: supportedSymbols, unsupported_symbols: unsupportedSymbols };
+    }
+
+    function filterSupportedSymbols(symbols) {
+      return (symbols || []).filter((symbol) => {
+        const text = String(symbol || "").trim();
+        if (!text) return false;
+        if (!text.includes(".")) return true;
+        const market = text.split(".").pop().toUpperCase();
+        return ["SH", "SSE", "SZ", "SZSE"].includes(market);
+      });
+    }
+
+    function suggestedAction(feedType, feedStatus) {
+      if (feedType === "tushare_realtime") {
+        if (feedStatus?.ready_mode === "direct") return "可直接保存并启动 Tushare 实时运行";
+        if (feedStatus?.ready_mode === "fallback") return "建议先配 Token；不配也能回退到 EasyQuotation 继续跑";
+        return "请先补 Token 或检查回退链";
+      }
+      if (feedType === "csv_replay") {
+        return feedStatus?.ready ? "保存后可启动 CSV 回放" : "请先填写 CSV 路径";
+      }
+      return "保存配置后可直接启动";
+    }
+
+    function numberField(label, key, value, min, max, step) {
+      const maxAttr = max ? `max="${max}"` : "";
+      return `<div class="field"><span>${escapeHtml(label)}</span><input type="number" data-config-number="${escapeHtml(key)}" value="${escapeHtml(String(value))}" min="${escapeHtml(min)}" ${maxAttr} step="${escapeHtml(step)}"></div>`;
+    }
+
+    function textField(label, key, value, kind = "text") {
+      const attr = kind === "list" ? "data-config-list" : "data-config";
+      return `<div class="field"><span>${escapeHtml(label)}</span><input type="text" ${attr}="${escapeHtml(key)}" value="${escapeHtml(String(value))}"></div>`;
+    }
+
+    function selectField(label, key, value, options) {
+      return `<div class="field"><span>${escapeHtml(label)}</span><select data-config="${escapeHtml(key)}">${options.map(([optionValue, optionLabel]) => `<option value="${escapeHtml(optionValue)}" ${String(value) === String(optionValue) ? "selected" : ""}>${escapeHtml(optionLabel)}</option>`).join("")}</select></div>`;
+    }
+
+    function checkField(label, key, checked) {
+      return `<label class="field check"><input type="checkbox" data-config-bool="${escapeHtml(key)}" ${checked ? "checked" : ""}><span>${escapeHtml(label)}</span></label>`;
+    }
+
+    function agentConfig(agents) {
+      if (!agents.length) return `<p class="empty">暂无智能体配置。</p>`;
+      return `<div class="agent-list">${agents.map((agent) => `
+        <div class="agent-row">
+          <div class="agent-primary">
+            <div class="agent-primary-head">
+              <span>ID</span>
+              <div class="agent-role-chip">${escapeHtml(translateRole(agent.role))}</div>
+            </div>
+            <input type="text" data-agent-id="${escapeHtml(agent.id)}" value="${escapeHtml(agent.id)}">
+          </div>
+          <label class="check"><input type="checkbox" data-agent-enabled="${escapeHtml(agent.id)}" ${agent.enabled ? "checked" : ""}>启用</label>
+          <div class="field"><span>资金配比</span><input type="number" min="0.01" max="1.00" step="0.01" data-agent-ratio="${escapeHtml(agent.id)}" value="${escapeHtml(String(agent.capital_ratio))}"></div>
+          <div class="field">
+            <span>角色</span>
+            <select data-agent-role="${escapeHtml(agent.id)}">
+              ${AVAILABLE_AGENT_ROLES.map(([value, label]) => `<option value="${escapeHtml(value)}" ${agent.role === value ? "selected" : ""}>${escapeHtml(label)}</option>`).join("")}
+            </select>
+          </div>
+          <button class="btn" type="button" data-agent-delete="${escapeHtml(agent.id)}">删除</button>
+        </div>`).join("")}</div>`;
+    }
+
+    function spotlight(title, agent) {
+      if (!agent) return `<section class="panel"><div class="section-head"><div><h3 class="section-title">${escapeHtml(title)}</h3><p class="muted">当前没有可展示结果。</p></div></div></section>`;
+      return `<section class="panel">
+        <div class="section-head"><div><h3 class="section-title">${escapeHtml(title)}</h3><p class="muted">${escapeHtml(translateRole(agent.role))}</p></div></div>
+        <div class="hero-value"><div class="hero-number">${escapeHtml(agent.agent_id || "-")}</div></div>
+        <div class="kv-list">
+          ${kv("净盈亏", formatSigned(agent.net_pnl))}
+          ${kv("NAV", formatValue(agent.nav))}
+          ${kv("收益率", `${formatValue(agent.return_pct)}%`)}
+          ${kv("成交笔数", formatValue(agent.trade_count))}
+        </div>
+      </section>`;
+    }
+
+    function alerts(list) {
+      if (!list.length) return `<p class="empty">当前没有运行告警。</p>`;
+      return `<div class="alerts">${list.map((item) => `
+        <article class="alert">
+          <div><span class="severity ${escapeHtml(item.severity || "info")}">${escapeHtml(translateSeverity(item.severity))}</span></div>
+          <strong>${escapeHtml(item.code || "告警")}</strong>
+          <div>${escapeHtml(item.message || "-")}</div>
+        </article>`).join("")}</div>`;
+    }
+
+    function curve(points, key, maxLabel, minLabel) {
+      if (!points.length) return `<p class="empty">暂无曲线数据。</p>`;
+      const width = 980;
+      const height = 240;
+      const pad = 24;
+      const values = points.map((point) => Number(point[key] || 0));
+      let min = Math.min(...values);
+      let max = Math.max(...values);
+      if (min === max) { min -= 1; max += 1; }
+      const spread = Math.max(max - min, 1);
+      const step = (width - pad * 2) / Math.max(points.length - 1, 1);
+      const poly = points.map((point, index) => {
+        const x = pad + index * step;
+        const y = height - pad - ((Number(point[key] || 0) - min) / spread) * (height - pad * 2);
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      }).join(" ");
+      return `<div class="chart"><svg viewBox="0 0 ${width} ${height}" width="100%" height="250" preserveAspectRatio="none">
+        <polyline fill="none" stroke="#67e8f9" stroke-width="3" points="${poly}"></polyline>
+        <text x="${pad}" y="18" fill="#94a3b8" font-size="12">${escapeHtml(maxLabel)} ${escapeHtml(formatValue(max))}</text>
+        <text x="${pad}" y="${height - 8}" fill="#94a3b8" font-size="12">${escapeHtml(minLabel)} ${escapeHtml(formatValue(min))}</text>
+        <text x="${width - 120}" y="18" fill="#94a3b8" font-size="12">点数 ${points.length}</text>
+      </svg></div>`;
+    }
+
+    function agentCurve(curves, attr) {
+      const ranking = attr?.ranking || [];
+      const ids = ranking.slice(0, 4).map((row) => row.agent_id).filter(Boolean);
+      const selected = (ids.length ? ids : Object.keys(curves || {}).slice(0, 4)).map((id) => ({ id, points: curves[id] || [] })).filter((item) => item.points.length);
+      if (!selected.length) return `<p class="empty">暂无智能体 NAV 曲线。</p>`;
+      const width = 980;
+      const height = 240;
+      const pad = 26;
+      const colors = ["#5eead4", "#67e8f9", "#fbbf24", "#fb7185"];
+      const values = selected.flatMap((item) => item.points.map((point) => Number(point.nav ?? 0)));
+      let min = Math.min(...values);
+      let max = Math.max(...values);
+      if (min === max) { min -= 1; max += 1; }
+      const spread = Math.max(max - min, 1);
+      const longest = Math.max(...selected.map((item) => item.points.length));
+      const step = (width - pad * 2) / Math.max(longest - 1, 1);
+      const lines = selected.map((item, idx) => {
+        const pts = item.points.map((point, index) => {
+          const x = pad + index * step;
+          const y = height - pad - ((Number(point.nav ?? 0) - min) / spread) * (height - pad * 2);
+          return `${x.toFixed(1)},${y.toFixed(1)}`;
+        }).join(" ");
+        return `<polyline fill="none" stroke="${colors[idx % colors.length]}" stroke-width="3" points="${pts}"></polyline>`;
+      }).join("");
+      const legends = selected.map((item, idx) => `<text x="${pad}" y="${20 + idx * 18}" fill="${colors[idx % colors.length]}" font-size="12">${escapeHtml(item.id)}</text>`).join("");
+      return `<div class="chart"><svg viewBox="0 0 ${width} ${height}" width="100%" height="250" preserveAspectRatio="none">
+        ${lines}${legends}
+        <text x="${width - 170}" y="18" fill="#94a3b8" font-size="12">最高 NAV ${escapeHtml(formatValue(max))}</text>
+        <text x="${width - 170}" y="${height - 8}" fill="#94a3b8" font-size="12">最低 NAV ${escapeHtml(formatValue(min))}</text>
+      </svg></div>`;
+    }
+
+    function feedNotice(state) {
+      const feedStatus = state?.market_feed_status || {};
+      if (!feedStatus.message) return "";
+      const className = feedStatus.ready ? "muted" : "bad";
+      return `<div class="${className}">${escapeHtml(feedStatus.message)}</div>`;
+    }
+
+    function ablation(report) {
+      if (!report) return `<p class="empty">暂无 ablation 结果。</p>`;
+      const base = report.baseline || {};
+      const best = report.best_disable_candidate || null;
+      return `${table([
+        { item: "基准收益率", value: `${formatValue(base.total_return_pct)}%` },
+        { item: "基准最大回撤", value: `${formatValue(base.max_drawdown_pct)}%` },
+        { item: "基准成交笔数", value: formatValue(base.trade_count) },
+        { item: "最佳移除候选", value: best ? `${best.disabled_agent_id} / 收益变化 ${formatSigned(best.return_pct_delta)} / 回撤变化 ${formatSigned(best.max_drawdown_pct_delta)}` : "-" }
+      ], ["item", "value"], ["项目", "结果"])}
+      <div style="height:14px;"></div>
+      ${table(report.scenarios || [], ["disabled_agent_id", "disabled_role", "total_return_pct", "return_pct_delta", "max_drawdown_pct", "max_drawdown_pct_delta", "trade_count"], ["移除智能体", "角色", "收益率 %", "收益率变化", "最大回撤 %", "回撤变化", "成交笔数"])}`;
+    }
+
+    function table(rows, keys, headers) {
+      if (!rows || !rows.length) return `<p class="empty">暂无数据。</p>`;
+      const head = headers.map((header) => `<th>${escapeHtml(header)}</th>`).join("");
+      const body = rows.map((row) => `<tr>${keys.map((key) => `<td>${escapeHtml(cell(key, row[key]))}</td>`).join("")}</tr>`).join("");
+      return `<div class="table-wrap"><table class="table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+    }
+
+    function cell(key, value) {
+      if (key === "effect") return translateEffect(value);
+      if (key === "role" || key === "disabled_role") return translateRole(value);
+      if (key === "mode") return translateMode(value);
+      if (key === "market") return translateMarket(value);
+      if (key === "severity") return translateSeverity(value);
+      if (key === "timestamp" || key === "generated_at") return formatDateTime(value);
+      if (key === "effect_breakdown") return effectBreakdown(value);
+      return formatValue(value);
+    }
+
+    function collectOverrides() {
+      const draft = configDraft || cloneConfig(currentState?.active_config || currentState?.config || {});
+      return {
+        system: {
+          mode: getNested(draft, "system.mode", "realtime"),
+          market: getNested(draft, "system.market", "cn"),
+          timezone: getNested(draft, "system.timezone", "Asia/Shanghai"),
+          capital_base: Number(getNested(draft, "system.capital_base", 1000000) || 0),
+          loop_iterations: Number(getNested(draft, "system.loop_iterations", 0) || 0),
+          poll_interval_seconds: Number(getNested(draft, "system.poll_interval_seconds", 15) || 0),
+          risk_budget: {
+            max_drawdown: Number(getNested(draft, "system.risk_budget.max_drawdown", 0.12) || 0),
+            var_limit: Number(getNested(draft, "system.risk_budget.var_limit", 0.08) || 0),
+            exposure_limit: Number(getNested(draft, "system.risk_budget.exposure_limit", 1) || 0)
+          }
+        },
+        market_feed: {
+          type: getNested(draft, "feeds.market.type", "synthetic_cn"),
+          symbols: getNested(draft, "feeds.market.symbols", []),
+          poll_interval_seconds: Number(getNested(draft, "feeds.market.poll_interval_seconds", 15) || 0),
+          token: getNested(draft, "feeds.market.token", ""),
+          token_env: getNested(draft, "feeds.market.token_env", "TUSHARE_TOKEN"),
+          fallback_provider: getNested(draft, "feeds.market.fallback_provider", "easyquotation"),
+          provider: getNested(draft, "feeds.market.provider", "sina"),
+          path: getNested(draft, "feeds.market.path", ""),
+          replay_interval_seconds: Number(getNested(draft, "feeds.market.replay_interval_seconds", 0) || 0),
+          symbol_field: getNested(draft, "feeds.market.symbol_field", "symbol"),
+          price_field: getNested(draft, "feeds.market.price_field", "price"),
+          volume_field: getNested(draft, "feeds.market.volume_field", "volume"),
+          feature_window: Number(getNested(draft, "feeds.market.feature_window", 20) || 20)
+        },
+        risk_controls: {
+          kill_switch: Boolean(getNested(draft, "risk_engine.controls.kill_switch", false)),
+          circuit_breaker: Number(getNested(draft, "risk_engine.controls.circuit_breaker", 0.05) || 0),
+          position_limit_pct: Number(getNested(draft, "risk_engine.controls.position_limit_pct", 0.35) || 0),
+          min_confidence: Number(getNested(draft, "risk_engine.controls.min_confidence", 0.45) || 0),
+          max_volatility: Number(getNested(draft, "risk_engine.controls.max_volatility", 0.8) || 0),
+          max_stock_position_pct: Number(getNested(draft, "risk_engine.controls.max_stock_position_pct", 0) || 0),
+          max_futures_contracts_per_symbol: Number(getNested(draft, "risk_engine.controls.max_futures_contracts_per_symbol", 0) || 0),
+          max_futures_margin_pct: Number(getNested(draft, "risk_engine.controls.max_futures_margin_pct", 0) || 0),
+          max_futures_notional_pct: Number(getNested(draft, "risk_engine.controls.max_futures_notional_pct", 0) || 0),
+          max_gross_exposure_pct: Number(getNested(draft, "risk_engine.controls.max_gross_exposure_pct", 0) || 0)
+        },
+        strategy_factory: {
+          templates: getNested(draft, "strategy_factory.templates", []),
+          autogen: {
+            enabled: Boolean(getNested(draft, "strategy_factory.autogen.enabled", false)),
+            max_candidates: Number(getNested(draft, "strategy_factory.autogen.max_candidates", 12) || 0)
+          }
+        },
+        agents: getNested(draft, "agents.registry", []).map((agent) => ({
+          id: agent.id,
+          role: agent.role,
+          enabled: Boolean(agent.enabled),
+          capital_ratio: Number(agent.capital_ratio || 0)
+        }))
+      };
+    }
+
+    function buildAgentId(role) {
+      const registry = getNested(configDraft, "agents.registry", []);
+      const prefix = String(role || "agent").replaceAll("_", "-");
+      let index = registry.filter((agent) => String(agent.role) === String(role)).length + 1;
+      let candidate = `${prefix}-${index}`;
+      while (registry.some((agent) => agent.id === candidate)) {
+        index += 1;
+        candidate = `${prefix}-${index}`;
+      }
+      return candidate;
+    }
+
+    function addAgent() {
+      syncDraft(currentState?.config || {}, false);
+      const role = "mean_reversion";
+      const next = {
+        id: buildAgentId(role),
+        role,
+        enabled: true,
+        capital_ratio: 0.1
+      };
+      configDraft.agents.registry.push(next);
+      draftDirty = true;
+      render(currentState, { forceView: true });
+      statusLine.textContent = `已新增智能体 ${next.id}`;
+    }
+
+    function removeAgent(agentId) {
+      const registry = configDraft?.agents?.registry || [];
+      const nextRegistry = registry.filter((agent) => agent.id !== agentId);
+      if (nextRegistry.length === registry.length) return;
+      configDraft.agents.registry = nextRegistry;
+      draftDirty = true;
+      render(currentState, { forceView: true });
+      statusLine.textContent = `已删除智能体 ${agentId}`;
+    }
+
+    async function saveConfig() {
+      statusLine.textContent = "正在保存配置...";
+      const response = await fetch("/api/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(configDraft || cloneConfig(currentState?.active_config || currentState?.config || {}))
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || "保存配置失败");
+      currentState = payload.state || currentState;
+      lastSyncAt = new Date();
+      draftDirty = false;
+      syncDraft(currentState?.config || {}, true);
+      render(currentState, { forceView: true });
+      statusLine.textContent = `配置已保存 · 已同步 ${formatClock(lastSyncAt)}`;
+    }
+
+    async function runSimulation() {
+      updateRunButton("running");
+      statusBadge.dataset.status = "running";
+      statusBadge.textContent = "运行中";
+      statusLine.textContent = "正在后台启动模拟...";
+      try {
+        const response = await fetch("/api/run", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(collectOverrides())
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || "启动失败");
+        currentState = payload;
+        lastSyncAt = new Date();
+        render(payload);
+        startPolling();
+      } catch (error) {
+        setErrorStatus(error.message);
+        updateRunButton("error");
+      }
+    }
+
+    async function disableLoserAndRun() {
+      const loser = currentState?.summary?.agent_attribution?.top_loser;
+      if (!loser?.agent_id) {
+        statusLine.textContent = "当前没有可关闭的最弱智能体。";
+        return;
+      }
+      if (loser.agent_id === "risk-engine") {
+        statusLine.textContent = "当前最弱对象是风控引擎，不能直接禁用。";
+        return;
+      }
+      syncDraft(currentState?.config || {});
+      const agent = (configDraft?.agents?.registry || []).find((item) => item.id === loser.agent_id);
+      if (!agent) {
+        statusLine.textContent = `找不到智能体 ${loser.agent_id} 的配置。`;
+        return;
+      }
+      agent.enabled = false;
+      draftDirty = true;
+      render(currentState);
+      statusLine.textContent = `已禁用 ${loser.agent_id}，正在重新运行。`;
+      await runSimulation();
+    }
+
+    function updateRunButton(status) {
+      const running = status === "running" || status === "loading";
+      runButton.disabled = running;
+      runButton.textContent = running ? "运行中..." : "运行模拟";
+    }
+
+    function formatValue(value) {
+      if (typeof value === "number") {
+        return Number.isInteger(value) ? value.toLocaleString("zh-CN") : value.toLocaleString("zh-CN", { maximumFractionDigits: 4 });
+      }
+      if (value === null || value === undefined || value === "") return "-";
+      return String(value);
+    }
+
+    function formatSigned(value) {
+      if (value === null || value === undefined || value === "") return "-";
+      const n = Number(value || 0);
+      return n > 0 ? `+${formatValue(n)}` : formatValue(n);
+    }
+
+    function formatDateTime(value) {
+      return value ? String(value).replace("T", " ") : "-";
+    }
+
+    function toneClass(value) {
+      const text = String(value || "");
+      if (text.startsWith("+")) return "good";
+      if (text.startsWith("-")) return "bad";
+      return "";
+    }
+
+    function effectBreakdown(value) {
+      const entries = Object.entries(value || {});
+      if (!entries.length) return "-";
+      return entries.sort((a, b) => String(a[0]).localeCompare(String(b[0]))).map(([effect, count]) => `${translateEffect(effect)} x${count}`).join(" / ");
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function translateStatus(value) {
+      return { idle: "待机", running: "运行中", success: "成功", error: "异常", loading: "加载中" }[value] || value || "-";
+    }
+
+    function translateRole(value) {
+      return {
+        news_event: "新闻事件",
+        reactive: "反应式交易",
+        swing: "波段交易",
+        futures_hedge: "期货对冲",
+        mean_reversion: "均值回归",
+        breakout: "突破交易",
+        fundamental: "基本面精选",
+        risk_engine: "风控引擎"
+      }[value] || value || "-";
+    }
+
+    function translateEffect(value) {
+      return { buy_stock: "买入股票", sell_stock: "卖出股票", open_long: "开多", close_long: "平多", open_short: "开空", close_short: "平空" }[value] || value || "-";
+    }
+
+    function translateSeverity(value) {
+      return { info: "提示", warning: "警告", critical: "严重" }[value] || value || "-";
+    }
+
+    function translateMode(value) {
+      return { simulation: "模拟", realtime: "实时", backtest: "回测" }[value] || value || "-";
+    }
+
+    function translateMarket(value) {
+      return { cn: "中国市场", us: "美国市场" }[value] || value || "-";
+    }
+
+    function translateFeedType(value) {
+      return {
+        synthetic_cn: "模拟行情",
+        tushare_realtime: "Tushare 实时",
+        easyquotation_realtime: "EasyQuotation 实时",
+        csv_replay: "CSV 回放"
+      }[value] || value || "-";
+    }
+
+    function translateFeedReadyMode(feedStatus) {
+      const type = feedStatus?.type || "";
+      if (type === "synthetic_cn") return feedStatus?.ready ? "模拟可用" : "未就绪";
+      if (type === "csv_replay") return feedStatus?.ready ? "回放可用" : "回放未就绪";
+      if (feedStatus?.ready_mode === "direct") return "直连可用";
+      if (feedStatus?.ready_mode === "fallback") return "回退可用";
+      if (feedStatus?.ready) return "真实行情就绪";
+      return "未就绪";
+    }
+
+    function applyFeedPreset(feedType) {
+      syncDraft(currentState?.active_config || currentState?.config || {}, false);
+      const currentSymbols = getNested(configDraft, "feeds.market.symbols", []) || [];
+      const defaultSymbols = ["510300.SH", "600519.SH", "000001.SZ"];
+      setNested(configDraft, "feeds.market.type", feedType);
+      if (!currentSymbols.length || currentSymbols.some((item) => String(item).includes("CCFX"))) {
+        setNested(configDraft, "feeds.market.symbols", defaultSymbols);
+      }
+      if (feedType === "tushare_realtime") {
+        setNested(configDraft, "feeds.market.token_env", getNested(configDraft, "feeds.market.token_env", "TUSHARE_TOKEN") || "TUSHARE_TOKEN");
+        setNested(configDraft, "feeds.market.fallback_provider", "easyquotation");
+        setNested(configDraft, "feeds.market.provider", "sina");
+      }
+      if (feedType === "easyquotation_realtime") {
+        setNested(configDraft, "feeds.market.provider", getNested(configDraft, "feeds.market.provider", "sina") || "sina");
+      }
+      draftDirty = true;
+      render(currentState, { forceView: true });
+      const predicted = predictDraftFeedStatus(configDraft, currentState);
+      statusLine.textContent = feedType === "tushare_realtime" && !predicted.has_token
+        ? `已切到 Tushare 草稿，当前未检测到 Token，将按回退链判断。`
+        : `已切换到 ${translateFeedType(feedType)} 草稿，记得保存后再运行。`;
+    }
+
+    document.addEventListener("click", (event) => {
+      const routeBtn = event.target.closest("[data-route]");
+      if (routeBtn) {
+        navigate(routeBtn.getAttribute("data-route"));
+        return;
+      }
+
+      const feedBtn = event.target.closest("[data-feed-select]");
+      if (feedBtn) {
+        applyFeedPreset(feedBtn.getAttribute("data-feed-select"));
+        return;
+      }
+
+      const deleteBtn = event.target.closest("[data-agent-delete]");
+      if (deleteBtn) {
+        removeAgent(deleteBtn.getAttribute("data-agent-delete"));
+        return;
+      }
+
+      const actionBtn = event.target.closest("[data-action]");
+      if (!actionBtn) return;
+      const action = actionBtn.getAttribute("data-action");
+      if (action === "run") runSimulation().catch((error) => setErrorStatus(error.message));
+      if (action === "go-agent-config") navigate("agent-config");
+      if (action === "go-agent-performance") navigate("agent-performance");
+      if (action === "refresh") {
+        statusLine.textContent = "正在刷新状态...";
+        fetchState().catch((error) => setErrorStatus(error.message));
+      }
+      if (action === "disable-loser") disableLoserAndRun().catch((error) => setErrorStatus(error.message));
+      if (action === "add-agent") addAgent();
+      if (action === "save-config") saveConfig().catch((error) => setErrorStatus(error.message));
+      if (action === "reset-config") {
+        syncDraft(currentState?.config || {}, true);
+        draftDirty = false;
+        render(currentState, { forceView: true });
+      }
+    });
+
+    document.addEventListener("input", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      syncDraft(currentState?.config || {}, false);
+      if (target.matches("[data-config]")) {
+        setNested(configDraft, target.getAttribute("data-config"), target.value);
+        draftDirty = true;
+      }
+      if (target.matches("[data-config-number]")) {
+        setNested(configDraft, target.getAttribute("data-config-number"), Number(target.value));
+        draftDirty = true;
+      }
+      if (target.matches("[data-config-list]")) {
+        const values = String(target.value).split(",").map((item) => item.trim()).filter(Boolean);
+        setNested(configDraft, target.getAttribute("data-config-list"), values);
+        draftDirty = true;
+      }
+      if (target.matches("[data-config-bool]")) {
+        setNested(configDraft, target.getAttribute("data-config-bool"), target.checked);
+        draftDirty = true;
+      }
+      if (target.matches("[data-agent-enabled]")) {
+        const agent = configDraft.agents.registry.find((item) => item.id === target.getAttribute("data-agent-enabled"));
+        if (agent) {
+          agent.enabled = target.checked;
+          draftDirty = true;
+        }
+      }
+      if (target.matches("[data-agent-ratio]")) {
+        const agent = configDraft.agents.registry.find((item) => item.id === target.getAttribute("data-agent-ratio"));
+        if (agent) {
+          agent.capital_ratio = Number(target.value);
+          draftDirty = true;
+        }
+      }
+      if (target.matches("[data-agent-role]")) {
+        const agent = configDraft.agents.registry.find((item) => item.id === target.getAttribute("data-agent-role"));
+        if (agent) {
+          agent.role = target.value;
+          draftDirty = true;
+        }
+      }
+    });
+
+    document.addEventListener("change", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      if (target.matches("[data-agent-id]")) {
+        syncDraft(currentState?.config || {}, false);
+        const agent = configDraft.agents.registry.find((item) => item.id === target.getAttribute("data-agent-id"));
+        const nextId = String(target.value || "").trim();
+        if (agent && nextId) {
+          agent.id = nextId;
+          draftDirty = true;
+          render(currentState, { forceView: true });
+        }
+      }
+    });
+
+    window.addEventListener("popstate", () => render(currentState, { forceView: true }));
+
+    ensureRoute();
+    fetchState().catch((error) => {
+      setErrorStatus(error.message);
+      render(null);
+    });
+    startPolling();
+  </script>
+</body>
+</html>

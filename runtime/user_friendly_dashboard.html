@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多智能体量化投资系统 - 用户友好版</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .metric-card {
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 30px;
+        }
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- 顶部英雄区 -->
+        <div class="hero">
+            <div class="container">
+                <h1 class="text-center mb-2">多智能体量化投资系统</h1>
+                <p class="text-center">专业投资，简单理解</p>
+                <div class="text-center mt-3">
+                    <span class="mx-3">运行时间: 2026-03-27</span>
+                    <span class="mx-3">模式: 模拟交易</span>
+                    <span class="mx-3">市场: 中国A股</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 核心指标 -->
+        <div class="row mb-5">
+            <div class="col-md-3">
+                <div class="card metric-card p-4">
+                    <div class="metric-value">¥1,048,868</div>
+                    <div class="metric-label">总资产</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card p-4">
+                    <div class="metric-value text-success">+4.89%</div>
+                    <div class="metric-label">收益率</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card p-4">
+                    <div class="metric-value text-warning">3.05%</div>
+                    <div class="metric-label">最大回撤</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card p-4">
+                    <div class="metric-value">31</div>
+                    <div class="metric-label">成交笔数</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 权益曲线 -->
+        <div class="card p-4 mb-5">
+            <h3 class="mb-4">资产增长趋势</h3>
+            <div class="chart-container">
+                <canvas id="equityChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 智能体表现 -->
+        <div class="card p-4 mb-5">
+            <h3 class="mb-4">智能体表现</h3>
+            <div class="chart-container">
+                <canvas id="agentChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 当前持仓 -->
+        <div class="table-container">
+            <h3 class="mb-4">当前持仓</h3>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>股票代码</th>
+                            <th>持仓数量</th>
+                            <th>平均成本</th>
+                            <th>当前价格</th>
+                            <th>市值</th>
+                            <th>盈亏</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>510300.SH</td>
+                            <td>11,100</td>
+                            <td>¥3.85</td>
+                            <td>¥3.80</td>
+                            <td>¥42,180</td>
+                            <td class="text-danger">-¥542.08</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-3">
+                <p><strong>现金可用:</strong> ¥1,006,688</p>
+            </div>
+        </div>
+
+        <!-- 最近交易 -->
+        <div class="table-container">
+            <h3 class="mb-4">最近交易</h3>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>股票代码</th>
+                            <th>方向</th>
+                            <th>数量</th>
+                            <th>价格</th>
+                            <th>金额</th>
+                            <th>盈亏</th>
+                            <th>智能体</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>600519.SH</td>
+                            <td><span class="status-danger">卖出</span></td>
+                            <td>100</td>
+                            <td>¥1,529.46</td>
+                            <td>¥152,946</td>
+                            <td class="text-success">+¥3,313</td>
+                            <td>reactive-hft</td>
+                        </tr>
+                        <tr>
+                            <td>510300.SH</td>
+                            <td><span class="status-success">买入</span></td>
+                            <td>7,900</td>
+                            <td>¥3.80</td>
+                            <td>¥30,020</td>
+                            <td>¥0</td>
+                            <td>news-alpha</td>
+                        </tr>
+                        <tr>
+                            <td>510300.SH</td>
+                            <td><span class="status-danger">卖出</span></td>
+                            <td>9,400</td>
+                            <td>¥3.80</td>
+                            <td>¥35,720</td>
+                            <td class="text-danger">-¥1,592.36</td>
+                            <td>reactive-hft</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 系统状态 -->
+        <div class="card p-4 mb-5">
+            <h3 class="mb-4">系统状态</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <span class="status-badge status-success">系统健康</span>
+                        <span class="ml-2">当前未发现强平、回撤越界或降权告警</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <strong>最优智能体:</strong> news-alpha (收益 ¥25,119)
+                    </div>
+                    <div class="mb-3">
+                        <strong>最差智能体:</strong> index-hedge (收益 ¥0)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 权益曲线数据
+        const equityData = [
+            {tick: 0, equity: 1000000.0},
+            {tick: 1, equity: 1000000.0},
+            {tick: 2, equity: 1000896.0},
+            {tick: 3, equity: 1000896.0},
+            {tick: 4, equity: 1000896.0},
+            {tick: 5, equity: 1002180.0},
+            {tick: 6, equity: 1002180.0},
+            {tick: 7, equity: 1002180.0},
+            {tick: 8, equity: 1003806.0},
+            {tick: 9, equity: 1003806.0},
+            {tick: 10, equity: 1003806.0},
+            {tick: 11, equity: 1007634.0},
+            {tick: 12, equity: 1007634.0},
+            {tick: 13, equity: 1007634.0},
+            {tick: 14, equity: 1007634.0},
+            {tick: 15, equity: 1007634.0},
+            {tick: 80, equity: 1048868.0}
+        ];
+
+        // 智能体表现数据
+        const agentData = [
+            {name: 'news-alpha', profit: 25119},
+            {name: 'reactive-hft', profit: 15000},
+            {name: 'swing-scout', profit: 8000},
+            {name: 'index-hedge', profit: 0}
+        ];
+
+        // 绘制权益曲线
+        const equityCtx = document.getElementById('equityChart').getContext('2d');
+        new Chart(equityCtx, {
+            type: 'line',
+            data: {
+                labels: equityData.map(d => d.tick),
+                datasets: [{
+                    label: '总资产',
+                    data: equityData.map(d => d.equity),
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: '资产增长曲线'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            callback: function(value) {
+                                return '¥' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 绘制智能体表现
+        const agentCtx = document.getElementById('agentChart').getContext('2d');
+        new Chart(agentCtx, {
+            type: 'bar',
+            data: {
+                labels: agentData.map(d => d.name),
+                datasets: [{
+                    label: '收益',
+                    data: agentData.map(d => d.profit),
+                    backgroundColor: [
+                        'rgba(102, 126, 234, 0.8)',
+                        'rgba(118, 75, 162, 0.8)',
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: '智能体收益对比'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '¥' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

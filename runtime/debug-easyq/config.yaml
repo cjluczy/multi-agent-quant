@@ -1,0 +1,78 @@
+version: 0.1.0
+system:
+  mode: realtime
+  timezone: Asia/Shanghai
+  market: cn
+  capital_base: 1000000
+  loop_iterations: 2
+  poll_interval_seconds: 0
+  risk_budget:
+    max_drawdown: 0.12
+    var_limit: 0.08
+    exposure_limit: 1.0
+feeds:
+  market:
+    type: easyquotation_realtime
+    provider: sina
+    symbols:
+    - 510300.SH
+    poll_interval_seconds: 0
+    feature_window: 5
+  sentiment:
+    type: synthetic_news
+    languages:
+    - zh
+    llm_summarizer: qwen2.5:32b
+strategy_factory:
+  templates:
+  - trend_follow
+agents:
+  scheduler:
+    max_concurrent: 1
+  registry:
+  - id: news-alpha
+    role: news_event
+    capital_ratio: 1.0
+    enabled: true
+market_simulation:
+  liquidity_model: cn_order_book
+  shock_scenarios: []
+  adversaries:
+    spoofing: false
+    momentum_ignition: false
+  slippage_bps: 0
+evolution:
+  population: 10
+  elitism: 0.2
+  refresh_interval: 10
+portfolio_brain:
+  optimizer: risk_parity
+  bandit: {}
+  min_trade_notional: 1000
+  per_trade_nav_pct: 0.1
+  loser_deweight_enabled: true
+  loser_deweight_floor: 0.35
+  loser_deweight_slope: 3.0
+risk_engine:
+  controls:
+    kill_switch: false
+    position_limit_pct: 0.4
+    min_confidence: 0.2
+    max_volatility: 5.0
+    max_stock_position_pct: 0.4
+    max_futures_contracts_per_symbol: 0
+    max_futures_margin_pct: 0.0
+    max_futures_notional_pct: 0.0
+    max_gross_exposure_pct: 1.0
+execution:
+  venues:
+  - name: sim-stock
+    type: paper
+    adapter: stock
+  default_venue: sim-stock
+  lot_size: 100
+  futures_multiplier: {}
+  futures_margin_rate: 0.12
+  futures_maintenance_margin_rate: 0.1
+  futures_fee_rate: 2.3e-05
+  blotter_path: d:\Project\Ai-Task\multi-agent-quant\runtime\debug-easyq\blotter.jsonl

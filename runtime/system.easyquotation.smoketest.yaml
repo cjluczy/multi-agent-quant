@@ -1,0 +1,99 @@
+version: 0.1.0
+system:
+  mode: realtime
+  timezone: Asia/Shanghai
+  market: cn
+  capital_base: 1000000
+  loop_iterations: 2
+  poll_interval_seconds: 0
+  risk_budget:
+    max_drawdown: 0.12
+    var_limit: 0.08
+    exposure_limit: 1.0
+feeds:
+  market:
+    type: easyquotation_realtime
+    provider: sina
+    symbols:
+    - 510300.SH
+    - 600519.SH
+    - 000001.SZ
+    poll_interval_seconds: 0
+    feature_window: 20
+reasoning:
+  llm_router:
+    default: qwen2.5:32b
+    fallbacks:
+    - glm4:9b
+    - gpt-4o-mini
+  context_store:
+    type: sqlite
+    path: data/rag_store.db
+strategy_factory:
+  templates:
+  - trend_follow
+  - event_driven
+  autogen:
+    enabled: true
+    max_candidates: 8
+  genetic:
+    population: 16
+    elitism: 0.2
+agents:
+  scheduler:
+    max_concurrent: 4
+    heartbeat_seconds: 2
+  registry:
+  - id: news-alpha
+    role: news_event
+    capital_ratio: 0.3
+  - id: reactive-hft
+    role: reactive
+    capital_ratio: 0.4
+  - id: swing-scout
+    role: swing
+    capital_ratio: 0.3
+market_simulation:
+  liquidity_model: cn_order_book
+  shock_scenarios: []
+  adversaries:
+    spoofing: false
+    momentum_ignition: false
+  slippage_bps: 4
+portfolio_brain:
+  optimizer: risk_parity
+  bandit:
+    type: ucb
+    exploration: 0.2
+  min_trade_notional: 5000
+  per_trade_nav_pct: 0.1
+  loser_deweight_enabled: true
+  loser_deweight_floor: 0.35
+  loser_deweight_slope: 3.0
+risk_engine:
+  controls:
+    kill_switch: false
+    circuit_breaker: 0.05
+    position_limit_pct: 0.35
+    min_confidence: 0.45
+    max_volatility: 0.8
+    max_stock_position_pct: 0.3
+    max_futures_contracts_per_symbol: 0
+    max_futures_margin_pct: 0.0
+    max_futures_notional_pct: 0.0
+    max_gross_exposure_pct: 0.95
+execution:
+  venues:
+  - name: sim-stock
+    type: paper
+    adapter: stock
+  default_venue: sim-stock
+  lot_size: 100
+  futures_multiplier: {}
+  futures_margin_rate: 0.12
+  futures_maintenance_margin_rate: 0.1
+  futures_fee_rate: 2.3e-05
+  blotter_path: runtime/easyquotation_smoketest_blotter.jsonl
+logging:
+  level: INFO
+  sink: logs/system.log

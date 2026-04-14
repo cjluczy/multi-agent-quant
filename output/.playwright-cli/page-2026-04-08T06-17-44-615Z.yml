@@ -1,0 +1,218 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: Multi-Agent Quant
+      - heading "量化控制台" [level=1] [ref=e6]
+    - navigation [ref=e20]:
+      - button "总览 账户与风险" [ref=e235] [cursor=pointer]:
+        - strong [ref=e236]: 总览
+        - generic [ref=e237]: 账户与风险
+      - button "运行 参数与启动" [ref=e238] [cursor=pointer]:
+        - strong [ref=e239]: 运行
+        - generic [ref=e240]: 参数与启动
+      - button "智能体 贡献与曲线" [ref=e241] [cursor=pointer]:
+        - strong [ref=e242]: 智能体
+        - generic [ref=e243]: 贡献与曲线
+      - button "持仓 仓位与流水" [ref=e244] [cursor=pointer]:
+        - strong [ref=e245]: 持仓
+        - generic [ref=e246]: 仓位与流水
+      - button "历史 历史与对比" [ref=e247] [cursor=pointer]:
+        - strong [ref=e248]: 历史
+        - generic [ref=e249]: 历史与对比
+    - generic [ref=e7]:
+      - generic [ref=e36]: Quick Look
+      - generic [ref=e37]:
+        - generic [ref=e38]:
+          - generic [ref=e39]: 总权益
+          - strong [ref=e40]: 1,101,321
+        - generic [ref=e41]:
+          - generic [ref=e42]: 已实现盈亏
+          - strong [ref=e43]: +66,130.37
+        - generic [ref=e44]:
+          - generic [ref=e45]: 未实现盈亏
+          - strong [ref=e46]: +35,190.61
+        - generic [ref=e47]:
+          - generic [ref=e48]: 成交笔数
+          - strong [ref=e49]: "51"
+        - generic [ref=e50]:
+          - generic [ref=e51]: 相较上次
+          - strong [ref=e52]: "-0.2254%"
+      - paragraph [ref=e53]: 当前快览
+  - generic [ref=e9]:
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e54]: Workspace / Run
+        - heading "运行" [level=2] [ref=e250]
+        - paragraph [ref=e56]: 参数配置
+      - generic [ref=e12]:
+        - generic [ref=e13]:
+          - generic [ref=e14]: 待机
+          - generic [ref=e57]: 最新结果 2026-03-28 03:16:28 · 已同步 14:17:43
+        - generic [ref=e15]:
+          - button "刷新状态" [ref=e16] [cursor=pointer]
+          - button "禁用最弱智能体" [ref=e17] [cursor=pointer]
+          - button "运行模拟" [ref=e18] [cursor=pointer]
+    - generic [ref=e19]:
+      - strong [ref=e58]: 当前上下文
+      - generic [ref=e59]:
+        - generic [ref=e60]:
+          - text: 模式
+          - strong [ref=e61]: 模拟
+        - generic [ref=e62]:
+          - text: 市场
+          - strong [ref=e63]: 中国市场
+        - generic [ref=e64]:
+          - text: 配置
+          - strong [ref=e65]: D:\Project\Ai-Task\multi-agent-quant\runtime\console_runtime.yaml
+    - main [ref=e66]:
+      - generic [ref=e251]:
+        - generic [ref=e252]:
+          - generic [ref=e253]:
+            - generic [ref=e254]:
+              - heading "基础配置" [level=3] [ref=e256]
+              - generic [ref=e257]:
+                - button "恢复配置" [ref=e258] [cursor=pointer]
+                - button "保存配置" [ref=e259] [cursor=pointer]
+            - generic [ref=e260]:
+              - generic [ref=e261]:
+                - generic [ref=e262]: 运行模式
+                - combobox [ref=e263]:
+                  - option "模拟"
+                  - option "实时" [selected]
+              - generic [ref=e264]:
+                - generic [ref=e265]: 市场
+                - combobox [ref=e266]:
+                  - option "中国市场" [selected]
+                  - option "美国市场"
+              - generic [ref=e267]:
+                - generic [ref=e268]: 初始资金
+                - spinbutton [ref=e269]: "1000000"
+              - generic [ref=e270]:
+                - generic [ref=e271]: 循环次数
+                - spinbutton [ref=e272]: "80"
+              - generic [ref=e273]:
+                - generic [ref=e274]: 刷新间隔(秒)
+                - spinbutton [ref=e275]: "15"
+              - generic [ref=e276]:
+                - generic [ref=e277]: 时区
+                - textbox [ref=e278]: Asia/Shanghai
+            - heading "风险预算" [level=3] [ref=e281]
+            - generic [ref=e282]:
+              - generic [ref=e283]:
+                - generic [ref=e284]: 最大回撤
+                - spinbutton [ref=e285]: "0.12"
+              - generic [ref=e286]:
+                - generic [ref=e287]: VaR 限制
+                - spinbutton [ref=e288]: "0.08"
+              - generic [ref=e289]:
+                - generic [ref=e290]: 暴露限制
+                - spinbutton [ref=e291]: "1"
+          - generic [ref=e292]:
+            - heading "运行状态" [level=3] [ref=e295]
+            - generic [ref=e296]:
+              - generic [ref=e297]:
+                - generic [ref=e298]: 基础配置
+                - strong [ref=e299]: D:\Project\Ai-Task\multi-agent-quant\configs\system.local.yaml
+              - generic [ref=e300]:
+                - generic [ref=e301]: 当前生效配置
+                - strong [ref=e302]: D:\Project\Ai-Task\multi-agent-quant\runtime\console_runtime.yaml
+              - generic [ref=e303]:
+                - generic [ref=e304]: 模式
+                - strong [ref=e305]: 模拟
+              - generic [ref=e306]:
+                - generic [ref=e307]: 市场
+                - strong [ref=e308]: 中国市场
+              - generic [ref=e309]:
+                - generic [ref=e310]: 数据源
+                - strong [ref=e311]: synthetic_cn
+              - generic [ref=e312]:
+                - generic [ref=e313]: 上次同步
+                - strong [ref=e314]: 14:17:43
+        - generic [ref=e315]:
+          - heading "风控参数" [level=3] [ref=e318]
+          - generic [ref=e319]:
+            - generic [ref=e320]:
+              - checkbox "启用 Kill Switch" [ref=e321]
+              - generic [ref=e322]: 启用 Kill Switch
+            - generic [ref=e323]:
+              - generic [ref=e324]: 熔断阈值
+              - spinbutton [ref=e325]: "0.05"
+            - generic [ref=e326]:
+              - generic [ref=e327]: 仓位限制
+              - spinbutton [ref=e328]: "0.35"
+            - generic [ref=e329]:
+              - generic [ref=e330]: 最小置信度
+              - spinbutton [ref=e331]: "0.45"
+            - generic [ref=e332]:
+              - generic [ref=e333]: 最大波动率
+              - spinbutton [ref=e334]: "0.8"
+            - generic [ref=e335]:
+              - generic [ref=e336]: 最大股票仓位
+              - spinbutton [ref=e337]: "0.3"
+            - generic [ref=e338]:
+              - generic [ref=e339]: 单品种期货手数上限
+              - spinbutton [ref=e340]: "2"
+            - generic [ref=e341]:
+              - generic [ref=e342]: 期货保证金上限
+              - spinbutton [ref=e343]: "0.28"
+            - generic [ref=e344]:
+              - generic [ref=e345]: 期货名义仓位上限
+              - spinbutton [ref=e346]: "0.7"
+            - generic [ref=e347]:
+              - generic [ref=e348]: 总风险敞口上限
+              - spinbutton [ref=e349]: "0.95"
+        - generic [ref=e350]:
+          - heading "策略工厂" [level=3] [ref=e353]
+          - generic [ref=e354]:
+            - generic [ref=e355]:
+              - checkbox "启用自动生成" [checked] [ref=e356]
+              - generic [ref=e357]: 启用自动生成
+            - generic [ref=e358]:
+              - generic [ref=e359]: 最大候选策略数
+              - spinbutton [ref=e360]: "12"
+            - generic [ref=e361]:
+              - generic [ref=e362]: 策略模板(逗号分隔)
+              - textbox [ref=e363]: pair_trade, trend_follow, event_driven
+        - generic [ref=e364]:
+          - heading "智能体配置" [level=3] [ref=e367]
+          - generic [ref=e368]:
+            - generic [ref=e369]:
+              - generic [ref=e370]:
+                - strong [ref=e371]: news-alpha
+                - generic [ref=e372]: 新闻事件
+              - generic [ref=e373]:
+                - checkbox "启用" [checked] [ref=e374]
+                - text: 启用
+              - generic [ref=e375]:
+                - generic [ref=e376]: 资金配比
+                - spinbutton [ref=e377]: "0.25"
+            - generic [ref=e378]:
+              - generic [ref=e379]:
+                - strong [ref=e380]: reactive-hft
+                - generic [ref=e381]: 反应式交易
+              - generic [ref=e382]:
+                - checkbox "启用" [checked] [ref=e383]
+                - text: 启用
+              - generic [ref=e384]:
+                - generic [ref=e385]: 资金配比
+                - spinbutton [ref=e386]: "0.35"
+            - generic [ref=e387]:
+              - generic [ref=e388]:
+                - strong [ref=e389]: swing-scout
+                - generic [ref=e390]: 波段交易
+              - generic [ref=e391]:
+                - checkbox "启用" [checked] [ref=e392]
+                - text: 启用
+              - generic [ref=e393]:
+                - generic [ref=e394]: 资金配比
+                - spinbutton [ref=e395]: "0.2"
+            - generic [ref=e396]:
+              - generic [ref=e397]:
+                - strong [ref=e398]: index-hedge
+                - generic [ref=e399]: 期货对冲
+              - generic [ref=e400]:
+                - checkbox "启用" [checked] [ref=e401]
+                - text: 启用
+              - generic [ref=e402]:
+                - generic [ref=e403]: 资金配比
+                - spinbutton [ref=e404]: "0.2"

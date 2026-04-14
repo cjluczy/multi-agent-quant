@@ -1,0 +1,126 @@
+[
+  {
+    "tick": 0,
+    "equity": 1000000.0
+  },
+  {
+    "tick": 1,
+    "equity": 999991.25,
+    "cash_available": 987814.25,
+    "gross_exposure": 12177.0
+  },
+  {
+    "tick": 2,
+    "equity": 999910.41,
+    "cash_available": 843402.41,
+    "gross_exposure": 156508.0
+  },
+  {
+    "tick": 3,
+    "equity": 999910.41,
+    "cash_available": 843402.41,
+    "gross_exposure": 156508.0
+  },
+  {
+    "tick": 4,
+    "equity": 999910.41,
+    "cash_available": 843402.41,
+    "gross_exposure": 156508.0
+  },
+  {
+    "tick": 5,
+    "equity": 999910.41,
+    "cash_available": 843402.41,
+    "gross_exposure": 156508.0
+  },
+  {
+    "tick": 6,
+    "equity": 999910.41,
+    "cash_available": 843402.41,
+    "gross_exposure": 156508.0
+  },
+  {
+    "tick": 7,
+    "equity": 999910.41,
+    "cash_available": 843402.41,
+    "gross_exposure": 156508.0
+  },
+  {
+    "tick": 8,
+    "equity": 999910.41,
+    "cash_available": 843402.41,
+    "gross_exposure": 156508.0
+  },
+  {
+    "tick": 9,
+    "equity": 999910.41,
+    "cash_available": 843402.41,
+    "gross_exposure": 156508.0
+  },
+  {
+    "tick": 10,
+    "equity": 999895.76,
+    "cash_available": 830367.76,
+    "gross_exposure": 169528.0
+  },
+  {
+    "tick": 11,
+    "equity": 999895.76,
+    "cash_available": 830367.76,
+    "gross_exposure": 169528.0
+  },
+  {
+    "tick": 12,
+    "equity": 999895.76,
+    "cash_available": 830367.76,
+    "gross_exposure": 169528.0
+  },
+  {
+    "tick": 13,
+    "equity": 999895.76,
+    "cash_available": 830367.76,
+    "gross_exposure": 169528.0
+  },
+  {
+    "tick": 14,
+    "equity": 999895.76,
+    "cash_available": 830367.76,
+    "gross_exposure": 169528.0
+  },
+  {
+    "tick": 15,
+    "equity": 999895.76,
+    "cash_available": 830367.76,
+    "gross_exposure": 169528.0
+  },
+  {
+    "tick": 16,
+    "equity": 999895.76,
+    "cash_available": 830367.76,
+    "gross_exposure": 169528.0
+  },
+  {
+    "tick": 17,
+    "equity": 999895.76,
+    "cash_available": 830367.76,
+    "gross_exposure": 169528.0
+  },
+  {
+    "tick": 18,
+    "equity": 999895.76,
+    "cash_available": 830367.76,
+    "gross_exposure": 169528.0
+  },
+  {
+    "tick": 19,
+    "equity": 999895.76,
+    "cash_available": 830367.76,
+    "gross_exposure": 169528.0
+  },
+  {
+    "tick": 20,
+    "equity": 999895.76,
+    "cash_available": 830367.76,
+    "gross_exposure": 169528.0
+  }
+]

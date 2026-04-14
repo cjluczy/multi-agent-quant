@@ -1,0 +1,4 @@
+pyyaml
+pydantic>=2.6
+rich
+tushare

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>????????</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b1020;
+      color: #e5e7eb;
+    }
+    .page {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: #121a2f;
+      border: 1px solid #24314d;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .metric-label {
+      color: #94a3b8;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+    .metric-value {
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #24314d;
+      text-align: left;
+      font-size: 14px;
+    }
+    th {
+      color: #93c5fd;
+      font-weight: 600;
+    }
+    .empty {
+      color: #94a3b8;
+      padding: 8px 0 0;
+    }
+    .muted {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+    .chart {
+      width: 100%;
+      height: 240px;
+      background: #0f172a;
+      border: 1px solid #24314d;
+      border-radius: 12px;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    @media (max-width: 900px) {
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <div>
+        <h1>????????</h1>
+        <div class="muted">?? ID?20260413-183338-176783 | ???realtime | ??????? | Tick ??20</div>
+        <div class="muted">?????2026-04-13T18:33:38</div>
+      </div>
+      <div class="card">
+        <div class="metric-label">????</div>
+        <div class="metric-value">0</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card"><div class="metric-label">???</div><div class="metric-value">999,895.76</div></div>
+      <div class="card"><div class="metric-label">????</div><div class="metric-value">830,367.76</div></div>
+      <div class="card"><div class="metric-label">????</div><div class="metric-value">169,528.00</div></div>
+      <div class="card"><div class="metric-label">?????</div><div class="metric-value">0.00</div></div>
+      <div class="card"><div class="metric-label">???</div><div class="metric-value">169,528.00</div></div>
+      <div class="card"><div class="metric-label">???</div><div class="metric-value">0.17</div></div>
+      <div class="card"><div class="metric-label">?????</div><div class="metric-value">0.00</div></div>
+      <div class="card"><div class="metric-label">??????</div><div class="metric-value">-104.24</div></div>
+      <div class="card"><div class="metric-label">???</div><div class="metric-value">47.79</div></div>
+      <div class="card"><div class="metric-label">????</div><div class="metric-value">3</div></div>
+    </div>
+
+    <div class="grid">
+      <div class="card"><div class="metric-label">???? %</div><div class="metric-value">-0.01</div></div>
+      <div class="card"><div class="metric-label">???? %</div><div class="metric-value">0.01</div></div>
+      <div class="card"><div class="metric-label">??? %</div><div class="metric-value">0.00</div></div>
+      <div class="card"><div class="metric-label">?????</div><div class="metric-value">56,528.15</div></div>
+      <div class="card"><div class="metric-label">???</div><div class="metric-value">0.17</div></div>
+      <div class="card"><div class="metric-label">????</div><div class="metric-value">-34.75</div></div>
+    </div>
+
+    <div class="grid">
+      <div class="card"><div class="metric-label">???????</div><div class="metric-value">reactive-hft</div><div class="muted">???????</div><div class="muted">????0.00</div><div class="muted">NAV?200,000.00</div><div class="muted">?????1.00</div></div>
+      <div class="card"><div class="metric-label">????????</div><div class="metric-value">quality-focus</div><div class="muted">???fundamental</div><div class="muted">????-152.03</div><div class="muted">NAV?119,847.97</div><div class="muted">?????1.00</div></div>
+    </div>
+
+    <div class="section card"><h2>运行告警</h2><table><thead><tr><th>级别</th><th>代码</th><th>智能体</th><th>说明</th></tr></thead><tbody><tr><td>warning</td><td>AGENT_DEWEIGHTED</td><td>quality-focus</td><td>智能体 quality-focus 已被自动降权到 0.9962，当前收益率 -0.13%。</td></tr><tr><td>info</td><td>REALTIME_MODE</td><td>None</td><td>系统当前运行于实时模式，数据源 easyquotation_realtime, symbols=[&#x27;510300.SH&#x27;, &#x27;600519.SH&#x27;, &#x27;000001.SZ&#x27;]。</td></tr><tr><td>warning</td><td>OUTSIDE_MARKET_HOURS</td><td>None</td><td>当前时间 2026-04-13 18:33:38 CST 不在 A 股连续竞价时段 (09:30-11:30, 13:00-15:00)，实时行情可能静态，收益/回撤验证参考价值有限。</td></tr></tbody></table></div>
+
+    <div class="two-col">
+      <div class="section card">
+        <h2>????</h2>
+        <div class="chart"><svg viewBox="0 0 960 200" width="100%" height="100%" preserveAspectRatio="none"><polyline fill="none" stroke="#38bdf8" stroke-width="3" points="20.0,20.0 66.0,33.4 112.0,157.5 158.0,157.5 204.0,157.5 250.0,157.5 296.0,157.5 342.0,157.5 388.0,157.5 434.0,157.5 480.0,180.0 526.0,180.0 572.0,180.0 618.0,180.0 664.0,180.0 710.0,180.0 756.0,180.0 802.0,180.0 848.0,180.0 894.0,180.0 940.0,180.0" /><text x="20" y="16" fill="#94a3b8" font-size="12">?? 1,000,000.00</text><text x="20" y="196" fill="#94a3b8" font-size="12">?? 999,895.76</text></svg></div>
+      </div>
+      <div class="section card">
+        <h2>??? NAV ??</h2>
+        <div class="chart"><svg viewBox="0 0 960 220" width="100%" height="100%" preserveAspectRatio="none"><polyline fill="none" stroke="#38bdf8" stroke-width="2.5" points="24.0,24.0 69.6,24.0 115.2,24.0 160.8,24.0 206.4,24.0 252.0,24.0 297.6,24.0 343.2,24.0 388.8,24.0 434.4,24.0 480.0,24.0 525.6,24.0 571.2,24.0 616.8,24.0 662.4,24.0 708.0,24.0 753.6,24.0 799.2,24.0 844.8,24.0 890.4,24.0 936.0,24.0" /><polyline fill="none" stroke="#22c55e" stroke-width="2.5" points="24.0,153.0 69.6,153.0 115.2,153.0 160.8,153.0 206.4,153.0 252.0,153.0 297.6,153.0 343.2,153.0 388.8,153.0 434.4,153.0 480.0,153.0 525.6,153.0 571.2,153.0 616.8,153.0 662.4,153.0 708.0,153.0 753.6,153.0 799.2,153.0 844.8,153.0 890.4,153.0 936.0,153.0" /><polyline fill="none" stroke="#f59e0b" stroke-width="2.5" points="24.0,153.0 69.6,153.0 115.2,153.0 160.8,153.0 206.4,153.0 252.0,153.0 297.6,153.0 343.2,153.0 388.8,153.0 434.4,153.0 480.0,153.0 525.6,153.0 571.2,153.0 616.8,153.0 662.4,153.0 708.0,153.0 753.6,153.0 799.2,153.0 844.8,153.0 890.4,153.0 936.0,153.0" /><polyline fill="none" stroke="#f43f5e" stroke-width="2.5" points="24.0,196.0 69.6,196.0 115.2,196.0 160.8,196.0 206.4,196.0 252.0,196.0 297.6,196.0 343.2,196.0 388.8,196.0 434.4,196.0 480.0,196.0 525.6,196.0 571.2,196.0 616.8,196.0 662.4,196.0 708.0,196.0 753.6,196.0 799.2,196.0 844.8,196.0 890.4,196.0 936.0,196.0" /><text x="24" y="18" fill="#38bdf8" font-size="12">reactive-hft</text><text x="24" y="36" fill="#22c55e" font-size="12">swing-scout</text><text x="24" y="54" fill="#f59e0b" font-size="12">mean-revert-core</text><text x="24" y="72" fill="#f43f5e" font-size="12">breakout-beta</text><text x="780" y="16" fill="#94a3b8" font-size="12">?? NAV 200,000.00</text><text x="780" y="214" fill="#94a3b8" font-size="12">?? NAV 120,000.00</text></svg></div>
+      </div>
+    </div>
+
+    <div class="section card">
+      <h2>???????</h2>
+      <table><thead><tr><th>??</th><th>???</th><th>??</th><th>NAV</th><th>??? %</th><th>????</th><th>??????</th><th>???</th><th>?????</th><th>?????</th><th>???</th><th>????</th><th>???</th><th>???? %</th><th>????</th></tr></thead><tbody><tr><td>1</td><td>reactive-hft</td><td>????</td><td>200,000.00</td><td>0.00</td><td>1.00</td><td>0.20</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0</td><td>0.00</td><td>0.00</td><td>-</td></tr><tr><td>2</td><td>swing-scout</td><td>????</td><td>140,000.00</td><td>0.00</td><td>1.00</td><td>0.14</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0</td><td>0.00</td><td>0.00</td><td>-</td></tr><tr><td>3</td><td>mean-revert-core</td><td>mean_reversion</td><td>140,000.00</td><td>0.00</td><td>1.00</td><td>0.14</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0</td><td>0.00</td><td>0.00</td><td>-</td></tr><tr><td>4</td><td>breakout-beta</td><td>breakout</td><td>120,000.00</td><td>0.00</td><td>1.00</td><td>0.12</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0</td><td>0.00</td><td>0.00</td><td>-</td></tr><tr><td>5</td><td>index-hedge</td><td>????</td><td>100,000.00</td><td>0.00</td><td>1.00</td><td>0.10</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0</td><td>0.00</td><td>0.00</td><td>-</td></tr><tr><td>6</td><td>quality-focus</td><td>fundamental</td><td>119,847.97</td><td>-0.13</td><td>1.00</td><td>0.12</td><td>-152.03</td><td>0.00</td><td>-104.24</td><td>47.79</td><td>3</td><td>169,584.45</td><td>100.00</td><td>???? x3</td></tr></tbody></table>
+    </div>
+
+    
+
+    <div class="two-col">
+      <div class="section card">
+        <h2>????</h2>
+        <table><thead><tr><th>??</th><th>??</th><th>????</th><th>???</th><th>??</th><th>?????</th></tr></thead><tbody><tr><td>000001.SZ</td><td>1100</td><td>11.08</td><td>11.07</td><td>12,177.00</td><td>-8.75</td></tr><tr><td>510300.SH</td><td>2800</td><td>4.66</td><td>4.65</td><td>13,020.00</td><td>-14.65</td></tr><tr><td>600519.SH</td><td>100</td><td>1,444.12</td><td>1,443.31</td><td>144,331.00</td><td>-80.84</td></tr></tbody></table>
+      </div>
+      <div class="section card">
+        <h2>????</h2>
+        <div class="empty">?????</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="section card">
+        <h2>????</h2>
+        <table><thead><tr><th>??</th><th>??</th><th>??</th><th>??</th><th>????</th><th>???</th></tr></thead><tbody><tr><td>510300.SH</td><td>????</td><td>2800</td><td>4.65</td><td>13,029.52</td><td>quality-focus</td></tr><tr><td>600519.SH</td><td>????</td><td>100</td><td>1,443.74</td><td>144,374.30</td><td>quality-focus</td></tr><tr><td>000001.SZ</td><td>????</td><td>1100</td><td>11.07</td><td>12,180.63</td><td>quality-focus</td></tr></tbody></table>
+      </div>
+      <div class="section card">
+        <h2>????</h2>
+        <div class="empty">?????</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

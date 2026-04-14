@@ -1,0 +1,1566 @@
+{
+  "run_id": "20260413-183338-176783",
+  "generated_at": "2026-04-13T18:33:38",
+  "mode": "realtime",
+  "market": "cn",
+  "ticks_processed": 20,
+  "kpis": {
+    "equity": 999895.76,
+    "cash_available": 830367.76,
+    "stock_market_value": 169528.0,
+    "stock_unrealized_pnl": -104.24,
+    "futures_margin_in_use": 0.0,
+    "futures_notional_exposure": 0.0,
+    "gross_exposure": 169528.0,
+    "leverage_ratio": 0.1695,
+    "realized_pnl": 0.0,
+    "futures_unrealized_pnl": 0.0,
+    "unrealized_pnl_total": -104.24,
+    "total_fees": 47.79,
+    "trade_count": 3
+  },
+  "positions": {
+    "stocks": [
+      {
+        "symbol": "000001.SZ",
+        "quantity": 1100,
+        "avg_price": 11.08,
+        "last_price": 11.07,
+        "market_value": 12177.0,
+        "unrealized_pnl": -8.75
+      },
+      {
+        "symbol": "510300.SH",
+        "quantity": 2800,
+        "avg_price": 4.66,
+        "last_price": 4.65,
+        "market_value": 13020.0,
+        "unrealized_pnl": -14.65
+      },
+      {
+        "symbol": "600519.SH",
+        "quantity": 100,
+        "avg_price": 1444.12,
+        "last_price": 1443.31,
+        "market_value": 144331.0,
+        "unrealized_pnl": -80.84
+      }
+    ],
+    "futures": []
+  },
+  "recent_fills": [
+    {
+      "symbol": "510300.SH",
+      "stock_name": "\u6caa\u6df1300ETF",
+      "action": "buy",
+      "quantity": 2800,
+      "price": 4.6534,
+      "notional": 13029.52,
+      "effect": "buy_stock",
+      "fee": 5.13,
+      "realized_pnl": 0.0,
+      "venue": "sim-ctp",
+      "agent_id": "quality-focus",
+      "initiator_id": "quality-focus",
+      "timestamp": "2026-04-13 18:36:24"
+    },
+    {
+      "symbol": "600519.SH",
+      "stock_name": "\u8d35\u5dde\u8305\u53f0",
+      "action": "buy",
+      "quantity": 100,
+      "price": 1443.743,
+      "notional": 144374.3,
+      "effect": "buy_stock",
+      "fee": 37.54,
+      "realized_pnl": 0.0,
+      "venue": "sim-ctp",
+      "agent_id": "quality-focus",
+      "initiator_id": "quality-focus",
+      "timestamp": "2026-04-13 18:34:23"
+    },
+    {
+      "symbol": "000001.SZ",
+      "stock_name": "\u5e73\u5b89\u94f6\u884c",
+      "action": "buy",
+      "quantity": 1100,
+      "price": 11.0733,
+      "notional": 12180.63,
+      "effect": "buy_stock",
+      "fee": 5.12,
+      "realized_pnl": 0.0,
+      "venue": "sim-ctp",
+      "agent_id": "quality-focus",
+      "initiator_id": "quality-focus",
+      "timestamp": "2026-04-13 18:33:38"
+    }
+  ],
+  "risk_events": {
+    "forced_liquidation_count": 0,
+    "recent_forced_liquidations": []
+  },
+  "performance": {
+    "start_equity": 1000000.0,
+    "end_equity": 999895.76,
+    "total_return_pct": -0.0104,
+    "max_drawdown_pct": 0.0104,
+    "volatility_pct": 0.0018,
+    "avg_trade_notional": 56528.15,
+    "turnover_ratio": 0.1696,
+    "pnl_per_trade": -34.75
+  },
+  "execution_breakdown": {
+    "buy_stock": 3
+  },
+  "agent_attribution": {
+    "ranking": [
+      {
+        "agent_id": "reactive-hft",
+        "role": "reactive",
+        "capital_ratio": 0.2,
+        "trade_count": 0,
+        "total_notional": 0.0,
+        "fees": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0,
+        "net_pnl": 0.0,
+        "notional_share_pct": 0.0,
+        "initial_capital": 200000.0,
+        "nav": 200000.0,
+        "return_pct": 0.0,
+        "deweight_multiplier": 1.0,
+        "effective_capital_ratio": 0.2,
+        "effect_breakdown": {},
+        "rank": 1
+      },
+      {
+        "agent_id": "swing-scout",
+        "role": "swing",
+        "capital_ratio": 0.14,
+        "trade_count": 0,
+        "total_notional": 0.0,
+        "fees": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0,
+        "net_pnl": 0.0,
+        "notional_share_pct": 0.0,
+        "initial_capital": 140000.0,
+        "nav": 140000.0,
+        "return_pct": 0.0,
+        "deweight_multiplier": 1.0,
+        "effective_capital_ratio": 0.14,
+        "effect_breakdown": {},
+        "rank": 2
+      },
+      {
+        "agent_id": "mean-revert-core",
+        "role": "mean_reversion",
+        "capital_ratio": 0.14,
+        "trade_count": 0,
+        "total_notional": 0.0,
+        "fees": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0,
+        "net_pnl": 0.0,
+        "notional_share_pct": 0.0,
+        "initial_capital": 140000.0,
+        "nav": 140000.0,
+        "return_pct": 0.0,
+        "deweight_multiplier": 1.0,
+        "effective_capital_ratio": 0.14,
+        "effect_breakdown": {},
+        "rank": 3
+      },
+      {
+        "agent_id": "breakout-beta",
+        "role": "breakout",
+        "capital_ratio": 0.12,
+        "trade_count": 0,
+        "total_notional": 0.0,
+        "fees": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0,
+        "net_pnl": 0.0,
+        "notional_share_pct": 0.0,
+        "initial_capital": 120000.0,
+        "nav": 120000.0,
+        "return_pct": 0.0,
+        "deweight_multiplier": 1.0,
+        "effective_capital_ratio": 0.12,
+        "effect_breakdown": {},
+        "rank": 4
+      },
+      {
+        "agent_id": "index-hedge",
+        "role": "futures_hedge",
+        "capital_ratio": 0.1,
+        "trade_count": 0,
+        "total_notional": 0.0,
+        "fees": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0,
+        "net_pnl": 0.0,
+        "notional_share_pct": 0.0,
+        "initial_capital": 100000.0,
+        "nav": 100000.0,
+        "return_pct": 0.0,
+        "deweight_multiplier": 1.0,
+        "effective_capital_ratio": 0.1,
+        "effect_breakdown": {},
+        "rank": 5
+      },
+      {
+        "agent_id": "quality-focus",
+        "role": "fundamental",
+        "capital_ratio": 0.12,
+        "trade_count": 3,
+        "total_notional": 169584.45,
+        "fees": 47.79,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -104.24,
+        "net_pnl": -152.03,
+        "notional_share_pct": 100.0,
+        "initial_capital": 120000.0,
+        "nav": 119847.97,
+        "return_pct": -0.1267,
+        "deweight_multiplier": 0.9962,
+        "effective_capital_ratio": 0.1195,
+        "effect_breakdown": {
+          "buy_stock": 3
+        },
+        "rank": 6
+      }
+    ],
+    "top_winner": {
+      "agent_id": "reactive-hft",
+      "role": "reactive",
+      "capital_ratio": 0.2,
+      "trade_count": 0,
+      "total_notional": 0.0,
+      "fees": 0.0,
+      "realized_pnl": 0.0,
+      "unrealized_pnl": 0.0,
+      "net_pnl": 0.0,
+      "notional_share_pct": 0.0,
+      "initial_capital": 200000.0,
+      "nav": 200000.0,
+      "return_pct": 0.0,
+      "deweight_multiplier": 1.0,
+      "effective_capital_ratio": 0.2,
+      "effect_breakdown": {},
+      "rank": 1
+    },
+    "top_loser": {
+      "agent_id": "quality-focus",
+      "role": "fundamental",
+      "capital_ratio": 0.12,
+      "trade_count": 3,
+      "total_notional": 169584.45,
+      "fees": 47.79,
+      "realized_pnl": 0.0,
+      "unrealized_pnl": -104.24,
+      "net_pnl": -152.03,
+      "notional_share_pct": 100.0,
+      "initial_capital": 120000.0,
+      "nav": 119847.97,
+      "return_pct": -0.1267,
+      "deweight_multiplier": 0.9962,
+      "effective_capital_ratio": 0.1195,
+      "effect_breakdown": {
+        "buy_stock": 3
+      },
+      "rank": 6
+    },
+    "totals": {
+      "trade_count": 3,
+      "total_notional": 169584.45,
+      "fees": 47.79,
+      "realized_pnl": 0.0,
+      "unrealized_pnl": -104.24,
+      "net_pnl": -152.03
+    }
+  },
+  "agent_weight_state": {
+    "reactive-hft": {
+      "initial_capital": 200000.0,
+      "nav": 200000.0,
+      "return_pct": 0.0,
+      "deweight_multiplier": 1.0,
+      "effective_capital_ratio": 0.2
+    },
+    "swing-scout": {
+      "initial_capital": 140000.0,
+      "nav": 140000.0,
+      "return_pct": 0.0,
+      "deweight_multiplier": 1.0,
+      "effective_capital_ratio": 0.14
+    },
+    "index-hedge": {
+      "initial_capital": 100000.0,
+      "nav": 100000.0,
+      "return_pct": 0.0,
+      "deweight_multiplier": 1.0,
+      "effective_capital_ratio": 0.1
+    },
+    "mean-revert-core": {
+      "initial_capital": 140000.0,
+      "nav": 140000.0,
+      "return_pct": 0.0,
+      "deweight_multiplier": 1.0,
+      "effective_capital_ratio": 0.14
+    },
+    "breakout-beta": {
+      "initial_capital": 120000.0,
+      "nav": 120000.0,
+      "return_pct": 0.0,
+      "deweight_multiplier": 1.0,
+      "effective_capital_ratio": 0.12
+    },
+    "quality-focus": {
+      "initial_capital": 120000.0,
+      "nav": 119847.97,
+      "return_pct": -0.1267,
+      "deweight_multiplier": 0.9962,
+      "effective_capital_ratio": 0.1195
+    }
+  },
+  "agent_metrics": {
+    "quality-focus": {
+      "trade_count": 3,
+      "total_notional": 169584.45,
+      "fees": 47.79,
+      "realized_pnl": 0.0,
+      "stock_unrealized_pnl": -104.24,
+      "futures_unrealized_pnl": 0.0,
+      "unrealized_pnl": -104.24,
+      "net_pnl": -152.03,
+      "stock_market_value": 169528.0,
+      "futures_margin_in_use": 0.0,
+      "futures_notional_exposure": 0.0,
+      "effect_breakdown": {
+        "buy_stock": 3
+      }
+    }
+  },
+  "agent_contribution_curves": {
+    "reactive-hft": [
+      {
+        "tick": 0,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 1,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 2,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 3,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 4,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 5,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 6,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 7,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 8,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 9,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 10,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 11,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 12,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 13,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 14,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 15,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 16,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 17,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 18,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 19,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 20,
+        "nav": 200000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      }
+    ],
+    "swing-scout": [
+      {
+        "tick": 0,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 1,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 2,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 3,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 4,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 5,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 6,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 7,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 8,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 9,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 10,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 11,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 12,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 13,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 14,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 15,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 16,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 17,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 18,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 19,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 20,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      }
+    ],
+    "index-hedge": [
+      {
+        "tick": 0,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 1,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 2,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 3,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 4,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 5,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 6,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 7,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 8,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 9,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 10,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 11,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 12,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 13,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 14,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 15,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 16,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 17,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 18,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 19,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 20,
+        "nav": 100000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      }
+    ],
+    "mean-revert-core": [
+      {
+        "tick": 0,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 1,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 2,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 3,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 4,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 5,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 6,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 7,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 8,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 9,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 10,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 11,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 12,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 13,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 14,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 15,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 16,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 17,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 18,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 19,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 20,
+        "nav": 140000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      }
+    ],
+    "breakout-beta": [
+      {
+        "tick": 0,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 1,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 2,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 3,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 4,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 5,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 6,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 7,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 8,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 9,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 10,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 11,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 12,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 13,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 14,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 15,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 16,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 17,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 18,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 19,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 20,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      }
+    ],
+    "quality-focus": [
+      {
+        "tick": 0,
+        "nav": 120000.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": 0.0
+      },
+      {
+        "tick": 1,
+        "nav": 119986.13,
+        "net_pnl": -13.87,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -8.75
+      },
+      {
+        "tick": 2,
+        "nav": 119867.75,
+        "net_pnl": -132.25,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -89.59
+      },
+      {
+        "tick": 3,
+        "nav": 119867.75,
+        "net_pnl": -132.25,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -89.59
+      },
+      {
+        "tick": 4,
+        "nav": 119867.75,
+        "net_pnl": -132.25,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -89.59
+      },
+      {
+        "tick": 5,
+        "nav": 119867.75,
+        "net_pnl": -132.25,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -89.59
+      },
+      {
+        "tick": 6,
+        "nav": 119867.75,
+        "net_pnl": -132.25,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -89.59
+      },
+      {
+        "tick": 7,
+        "nav": 119867.75,
+        "net_pnl": -132.25,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -89.59
+      },
+      {
+        "tick": 8,
+        "nav": 119867.75,
+        "net_pnl": -132.25,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -89.59
+      },
+      {
+        "tick": 9,
+        "nav": 119867.75,
+        "net_pnl": -132.25,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -89.59
+      },
+      {
+        "tick": 10,
+        "nav": 119847.97,
+        "net_pnl": -152.03,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -104.24
+      },
+      {
+        "tick": 11,
+        "nav": 119847.97,
+        "net_pnl": -152.03,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -104.24
+      },
+      {
+        "tick": 12,
+        "nav": 119847.97,
+        "net_pnl": -152.03,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -104.24
+      },
+      {
+        "tick": 13,
+        "nav": 119847.97,
+        "net_pnl": -152.03,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -104.24
+      },
+      {
+        "tick": 14,
+        "nav": 119847.97,
+        "net_pnl": -152.03,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -104.24
+      },
+      {
+        "tick": 15,
+        "nav": 119847.97,
+        "net_pnl": -152.03,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -104.24
+      },
+      {
+        "tick": 16,
+        "nav": 119847.97,
+        "net_pnl": -152.03,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -104.24
+      },
+      {
+        "tick": 17,
+        "nav": 119847.97,
+        "net_pnl": -152.03,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -104.24
+      },
+      {
+        "tick": 18,
+        "nav": 119847.97,
+        "net_pnl": -152.03,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -104.24
+      },
+      {
+        "tick": 19,
+        "nav": 119847.97,
+        "net_pnl": -152.03,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -104.24
+      },
+      {
+        "tick": 20,
+        "nav": 119847.97,
+        "net_pnl": -152.03,
+        "realized_pnl": 0.0,
+        "unrealized_pnl": -104.24
+      }
+    ]
+  },
+  "equity_curve": [
+    {
+      "tick": 0,
+      "equity": 1000000.0
+    },
+    {
+      "tick": 1,
+      "equity": 999991.25,
+      "cash_available": 987814.25,
+      "gross_exposure": 12177.0
+    },
+    {
+      "tick": 2,
+      "equity": 999910.41,
+      "cash_available": 843402.41,
+      "gross_exposure": 156508.0
+    },
+    {
+      "tick": 3,
+      "equity": 999910.41,
+      "cash_available": 843402.41,
+      "gross_exposure": 156508.0
+    },
+    {
+      "tick": 4,
+      "equity": 999910.41,
+      "cash_available": 843402.41,
+      "gross_exposure": 156508.0
+    },
+    {
+      "tick": 5,
+      "equity": 999910.41,
+      "cash_available": 843402.41,
+      "gross_exposure": 156508.0
+    },
+    {
+      "tick": 6,
+      "equity": 999910.41,
+      "cash_available": 843402.41,
+      "gross_exposure": 156508.0
+    },
+    {
+      "tick": 7,
+      "equity": 999910.41,
+      "cash_available": 843402.41,
+      "gross_exposure": 156508.0
+    },
+    {
+      "tick": 8,
+      "equity": 999910.41,
+      "cash_available": 843402.41,
+      "gross_exposure": 156508.0
+    },
+    {
+      "tick": 9,
+      "equity": 999910.41,
+      "cash_available": 843402.41,
+      "gross_exposure": 156508.0
+    },
+    {
+      "tick": 10,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 11,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 12,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 13,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 14,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 15,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 16,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 17,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 18,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 19,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 20,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    }
+  ],
+  "active_agents": [
+    {
+      "id": "reactive-hft",
+      "role": "reactive",
+      "capital_ratio": 0.2
+    },
+    {
+      "id": "swing-scout",
+      "role": "swing",
+      "capital_ratio": 0.14
+    },
+    {
+      "id": "index-hedge",
+      "role": "futures_hedge",
+      "capital_ratio": 0.1
+    },
+    {
+      "id": "mean-revert-core",
+      "role": "mean_reversion",
+      "capital_ratio": 0.14
+    },
+    {
+      "id": "breakout-beta",
+      "role": "breakout",
+      "capital_ratio": 0.12
+    },
+    {
+      "id": "quality-focus",
+      "role": "fundamental",
+      "capital_ratio": 0.12
+    }
+  ],
+  "data_source": {
+    "market_feed_type": "easyquotation_realtime",
+    "market_symbols": [
+      "510300.SH",
+      "600519.SH",
+      "000001.SZ"
+    ],
+    "poll_interval_seconds": 15.0
+  },
+  "account": {
+    "cash_available": 830367.76,
+    "stock_positions": {
+      "000001.SZ": 1100,
+      "600519.SH": 100,
+      "510300.SH": 2800
+    },
+    "stock_position_detail": {
+      "000001.SZ": {
+        "quantity": 1100,
+        "avg_price": 11.08,
+        "last_price": 11.07,
+        "market_value": 12177.0,
+        "unrealized_pnl": -8.75
+      },
+      "600519.SH": {
+        "quantity": 100,
+        "avg_price": 1444.12,
+        "last_price": 1443.31,
+        "market_value": 144331.0,
+        "unrealized_pnl": -80.84
+      },
+      "510300.SH": {
+        "quantity": 2800,
+        "avg_price": 4.66,
+        "last_price": 4.65,
+        "market_value": 13020.0,
+        "unrealized_pnl": -14.65
+      }
+    },
+    "stock_market_value": 169528.0,
+    "stock_unrealized_pnl": -104.24,
+    "futures_positions": {},
+    "futures_margin_in_use": 0.0,
+    "futures_notional_exposure": 0.0,
+    "futures_net_notional_exposure": 0.0,
+    "futures_unrealized_pnl": 0.0,
+    "gross_exposure": 169528.0,
+    "leverage_ratio": 0.1695,
+    "realized_pnl": 0.0,
+    "total_fees": 47.79,
+    "trade_count": 3,
+    "equity": 999895.76,
+    "last_prices": {
+      "000001.SZ": 11.07,
+      "600519.SH": 1443.31,
+      "510300.SH": 4.65
+    },
+    "agent_positions": {
+      "quality-focus": {
+        "stocks": {
+          "000001.SZ": {
+            "quantity": 1100,
+            "avg_price": 11.08,
+            "last_price": 11.07,
+            "market_value": 12177.0,
+            "unrealized_pnl": -8.75
+          },
+          "600519.SH": {
+            "quantity": 100,
+            "avg_price": 1444.12,
+            "last_price": 1443.31,
+            "market_value": 144331.0,
+            "unrealized_pnl": -80.84
+          },
+          "510300.SH": {
+            "quantity": 2800,
+            "avg_price": 4.66,
+            "last_price": 4.65,
+            "market_value": 13020.0,
+            "unrealized_pnl": -14.65
+          }
+        },
+        "futures": {}
+      }
+    },
+    "agent_metrics": {
+      "quality-focus": {
+        "trade_count": 3,
+        "total_notional": 169584.45,
+        "fees": 47.79,
+        "realized_pnl": 0.0,
+        "stock_unrealized_pnl": -104.24,
+        "futures_unrealized_pnl": 0.0,
+        "unrealized_pnl": -104.24,
+        "net_pnl": -152.03,
+        "stock_market_value": 169528.0,
+        "futures_margin_in_use": 0.0,
+        "futures_notional_exposure": 0.0,
+        "effect_breakdown": {
+          "buy_stock": 3
+        }
+      }
+    },
+    "agent_weight_state": {
+      "reactive-hft": {
+        "initial_capital": 200000.0,
+        "nav": 200000.0,
+        "return_pct": 0.0,
+        "deweight_multiplier": 1.0,
+        "effective_capital_ratio": 0.2
+      },
+      "swing-scout": {
+        "initial_capital": 140000.0,
+        "nav": 140000.0,
+        "return_pct": 0.0,
+        "deweight_multiplier": 1.0,
+        "effective_capital_ratio": 0.14
+      },
+      "index-hedge": {
+        "initial_capital": 100000.0,
+        "nav": 100000.0,
+        "return_pct": 0.0,
+        "deweight_multiplier": 1.0,
+        "effective_capital_ratio": 0.1
+      },
+      "mean-revert-core": {
+        "initial_capital": 140000.0,
+        "nav": 140000.0,
+        "return_pct": 0.0,
+        "deweight_multiplier": 1.0,
+        "effective_capital_ratio": 0.14
+      },
+      "breakout-beta": {
+        "initial_capital": 120000.0,
+        "nav": 120000.0,
+        "return_pct": 0.0,
+        "deweight_multiplier": 1.0,
+        "effective_capital_ratio": 0.12
+      },
+      "quality-focus": {
+        "initial_capital": 120000.0,
+        "nav": 119847.97,
+        "return_pct": -0.1267,
+        "deweight_multiplier": 0.9962,
+        "effective_capital_ratio": 0.1195
+      }
+    }
+  },
+  "alerts": [
+    {
+      "severity": "warning",
+      "code": "AGENT_DEWEIGHTED",
+      "message": "\u667a\u80fd\u4f53 quality-focus \u5df2\u88ab\u81ea\u52a8\u964d\u6743\u5230 0.9962\uff0c\u5f53\u524d\u6536\u76ca\u7387 -0.13%\u3002",
+      "agent_id": "quality-focus"
+    },
+    {
+      "severity": "info",
+      "code": "REALTIME_MODE",
+      "message": "\u7cfb\u7edf\u5f53\u524d\u8fd0\u884c\u4e8e\u5b9e\u65f6\u6a21\u5f0f\uff0c\u6570\u636e\u6e90 easyquotation_realtime, symbols=['510300.SH', '600519.SH', '000001.SZ']\u3002"
+    },
+    {
+      "severity": "warning",
+      "code": "OUTSIDE_MARKET_HOURS",
+      "message": "\u5f53\u524d\u65f6\u95f4 2026-04-13 18:33:38 CST \u4e0d\u5728 A \u80a1\u8fde\u7eed\u7ade\u4ef7\u65f6\u6bb5 (09:30-11:30, 13:00-15:00)\uff0c\u5b9e\u65f6\u884c\u60c5\u53ef\u80fd\u9759\u6001\uff0c\u6536\u76ca/\u56de\u64a4\u9a8c\u8bc1\u53c2\u8003\u4ef7\u503c\u6709\u9650\u3002"
+    }
+  ],
+  "ops_report": "# \u8fd0\u884c\u6458\u8981\n\n- \u8fd0\u884c ID: 20260413-183338-176783\n- \u751f\u6210\u65f6\u95f4: 2026-04-13T18:33:38\n- \u6a21\u5f0f: realtime\n- \u5e02\u573a: cn\n- \u6570\u636e\u6e90: easyquotation_realtime\n- Symbols: ['510300.SH', '600519.SH', '000001.SZ']\n\n## \u7ec4\u5408\u6982\u51b5\n- \u603b\u6743\u76ca: 999895.76\n- \u6536\u76ca\u7387: -0.0104%\n- \u6700\u5927\u56de\u64a4: 0.0104%\n- \u6760\u6746\u7387: 0.1695\n- \u6210\u4ea4\u7b14\u6570: 3\n\n## \u667a\u80fd\u4f53\u6982\u51b5\n- \u5f53\u524d\u6700\u4f18: reactive-hft (0.0)\n- \u5f53\u524d\u6700\u5dee: quality-focus (-152.03)\n\n## \u544a\u8b66\n- [warning] AGENT_DEWEIGHTED: \u667a\u80fd\u4f53 quality-focus \u5df2\u88ab\u81ea\u52a8\u964d\u6743\u5230 0.9962\uff0c\u5f53\u524d\u6536\u76ca\u7387 -0.13%\u3002\n- [info] REALTIME_MODE: \u7cfb\u7edf\u5f53\u524d\u8fd0\u884c\u4e8e\u5b9e\u65f6\u6a21\u5f0f\uff0c\u6570\u636e\u6e90 easyquotation_realtime, symbols=['510300.SH', '600519.SH', '000001.SZ']\u3002\n- [warning] OUTSIDE_MARKET_HOURS: \u5f53\u524d\u65f6\u95f4 2026-04-13 18:33:38 CST \u4e0d\u5728 A \u80a1\u8fde\u7eed\u7ade\u4ef7\u65f6\u6bb5 (09:30-11:30, 13:00-15:00)\uff0c\u5b9e\u65f6\u884c\u60c5\u53ef\u80fd\u9759\u6001\uff0c\u6536\u76ca/\u56de\u64a4\u9a8c\u8bc1\u53c2\u8003\u4ef7\u503c\u6709\u9650\u3002\n"
+}

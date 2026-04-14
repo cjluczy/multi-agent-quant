@@ -1,0 +1,18 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: Multi-Agent Quant
+      - heading "量化控制台" [level=1] [ref=e6]
+    - navigation
+  - generic [ref=e9]:
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - heading [level=2]
+        - paragraph
+      - generic [ref=e12]:
+        - generic [ref=e14]: 待机
+        - generic [ref=e15]:
+          - button "刷新状态" [ref=e16] [cursor=pointer]
+          - button "禁用最弱智能体" [ref=e17] [cursor=pointer]
+          - button "运行模拟" [ref=e18] [cursor=pointer]
+    - main

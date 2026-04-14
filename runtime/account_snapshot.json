@@ -1,0 +1,272 @@
+{
+  "run_id": "20260413-183338-176783",
+  "generated_at": "2026-04-13T18:33:38",
+  "mode": "realtime",
+  "market": "cn",
+  "ticks_processed": 20,
+  "equity_curve": [
+    {
+      "tick": 0,
+      "equity": 1000000.0
+    },
+    {
+      "tick": 1,
+      "equity": 999991.25,
+      "cash_available": 987814.25,
+      "gross_exposure": 12177.0
+    },
+    {
+      "tick": 2,
+      "equity": 999910.41,
+      "cash_available": 843402.41,
+      "gross_exposure": 156508.0
+    },
+    {
+      "tick": 3,
+      "equity": 999910.41,
+      "cash_available": 843402.41,
+      "gross_exposure": 156508.0
+    },
+    {
+      "tick": 4,
+      "equity": 999910.41,
+      "cash_available": 843402.41,
+      "gross_exposure": 156508.0
+    },
+    {
+      "tick": 5,
+      "equity": 999910.41,
+      "cash_available": 843402.41,
+      "gross_exposure": 156508.0
+    },
+    {
+      "tick": 6,
+      "equity": 999910.41,
+      "cash_available": 843402.41,
+      "gross_exposure": 156508.0
+    },
+    {
+      "tick": 7,
+      "equity": 999910.41,
+      "cash_available": 843402.41,
+      "gross_exposure": 156508.0
+    },
+    {
+      "tick": 8,
+      "equity": 999910.41,
+      "cash_available": 843402.41,
+      "gross_exposure": 156508.0
+    },
+    {
+      "tick": 9,
+      "equity": 999910.41,
+      "cash_available": 843402.41,
+      "gross_exposure": 156508.0
+    },
+    {
+      "tick": 10,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 11,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 12,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 13,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 14,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 15,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 16,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 17,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 18,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 19,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    },
+    {
+      "tick": 20,
+      "equity": 999895.76,
+      "cash_available": 830367.76,
+      "gross_exposure": 169528.0
+    }
+  ],
+  "account": {
+    "cash_available": 830367.76,
+    "stock_positions": {
+      "000001.SZ": 1100,
+      "600519.SH": 100,
+      "510300.SH": 2800
+    },
+    "stock_position_detail": {
+      "000001.SZ": {
+        "quantity": 1100,
+        "avg_price": 11.08,
+        "last_price": 11.07,
+        "market_value": 12177.0,
+        "unrealized_pnl": -8.75
+      },
+      "600519.SH": {
+        "quantity": 100,
+        "avg_price": 1444.12,
+        "last_price": 1443.31,
+        "market_value": 144331.0,
+        "unrealized_pnl": -80.84
+      },
+      "510300.SH": {
+        "quantity": 2800,
+        "avg_price": 4.66,
+        "last_price": 4.65,
+        "market_value": 13020.0,
+        "unrealized_pnl": -14.65
+      }
+    },
+    "stock_market_value": 169528.0,
+    "stock_unrealized_pnl": -104.24,
+    "futures_positions": {},
+    "futures_margin_in_use": 0.0,
+    "futures_notional_exposure": 0.0,
+    "futures_net_notional_exposure": 0.0,
+    "futures_unrealized_pnl": 0.0,
+    "gross_exposure": 169528.0,
+    "leverage_ratio": 0.1695,
+    "realized_pnl": 0.0,
+    "total_fees": 47.79,
+    "trade_count": 3,
+    "equity": 999895.76,
+    "last_prices": {
+      "000001.SZ": 11.07,
+      "600519.SH": 1443.31,
+      "510300.SH": 4.65
+    },
+    "agent_positions": {
+      "quality-focus": {
+        "stocks": {
+          "000001.SZ": {
+            "quantity": 1100,
+            "avg_price": 11.08,
+            "last_price": 11.07,
+            "market_value": 12177.0,
+            "unrealized_pnl": -8.75
+          },
+          "600519.SH": {
+            "quantity": 100,
+            "avg_price": 1444.12,
+            "last_price": 1443.31,
+            "market_value": 144331.0,
+            "unrealized_pnl": -80.84
+          },
+          "510300.SH": {
+            "quantity": 2800,
+            "avg_price": 4.66,
+            "last_price": 4.65,
+            "market_value": 13020.0,
+            "unrealized_pnl": -14.65
+          }
+        },
+        "futures": {}
+      }
+    },
+    "agent_metrics": {
+      "quality-focus": {
+        "trade_count": 3,
+        "total_notional": 169584.45,
+        "fees": 47.79,
+        "realized_pnl": 0.0,
+        "stock_unrealized_pnl": -104.24,
+        "futures_unrealized_pnl": 0.0,
+        "unrealized_pnl": -104.24,
+        "net_pnl": -152.03,
+        "stock_market_value": 169528.0,
+        "futures_margin_in_use": 0.0,
+        "futures_notional_exposure": 0.0,
+        "effect_breakdown": {
+          "buy_stock": 3
+        }
+      }
+    },
+    "agent_weight_state": {
+      "reactive-hft": {
+        "initial_capital": 200000.0,
+        "nav": 200000.0,
+        "return_pct": 0.0,
+        "deweight_multiplier": 1.0,
+        "effective_capital_ratio": 0.2
+      },
+      "swing-scout": {
+        "initial_capital": 140000.0,
+        "nav": 140000.0,
+        "return_pct": 0.0,
+        "deweight_multiplier": 1.0,
+        "effective_capital_ratio": 0.14
+      },
+      "index-hedge": {
+        "initial_capital": 100000.0,
+        "nav": 100000.0,
+        "return_pct": 0.0,
+        "deweight_multiplier": 1.0,
+        "effective_capital_ratio": 0.1
+      },
+      "mean-revert-core": {
+        "initial_capital": 140000.0,
+        "nav": 140000.0,
+        "return_pct": 0.0,
+        "deweight_multiplier": 1.0,
+        "effective_capital_ratio": 0.14
+      },
+      "breakout-beta": {
+        "initial_capital": 120000.0,
+        "nav": 120000.0,
+        "return_pct": 0.0,
+        "deweight_multiplier": 1.0,
+        "effective_capital_ratio": 0.12
+      },
+      "quality-focus": {
+        "initial_capital": 120000.0,
+        "nav": 119847.97,
+        "return_pct": -0.1267,
+        "deweight_multiplier": 0.9962,
+        "effective_capital_ratio": 0.1195
+      }
+    }
+  }
+}

@@ -1,0 +1,1053 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>多智能体量化控制台</title>
+  <style>
+    :root {
+      --bg: #08111f;
+      --panel: rgba(12, 24, 43, 0.88);
+      --panel-soft: rgba(11, 20, 37, 0.78);
+      --line: rgba(143, 180, 235, 0.14);
+      --text: #eff6ff;
+      --muted: #94a3b8;
+      --accent: #67e8f9;
+      --accent-2: #5eead4;
+      --good: #4ade80;
+      --bad: #fb7185;
+      --warn: #fbbf24;
+      --radius: 20px;
+      --shadow: 0 24px 48px rgba(0, 0, 0, 0.28);
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(103, 232, 249, 0.12), transparent 24%),
+        linear-gradient(180deg, #07101d, #0a1322 42%, #08111f);
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 272px minmax(0, 1fr);
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 24px 18px;
+      border-right: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(7, 15, 27, 0.96), rgba(8, 17, 31, 0.94));
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 20px;
+    }
+    .brand { display: grid; gap: 8px; }
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+    }
+    .brand h1, .topbar h2, .section-title { margin: 0; letter-spacing: -.03em; }
+    .brand h1 { font-size: 30px; line-height: 1.05; }
+    .brand p, .topbar p, .muted, .empty { margin: 0; color: var(--muted); line-height: 1.55; }
+    .nav { display: grid; gap: 10px; }
+    .nav-btn {
+      width: 100%;
+      text-align: left;
+      padding: 14px 15px;
+      border-radius: 14px;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid transparent;
+      display: grid;
+      gap: 4px;
+      transition: .15s ease;
+    }
+    .nav-btn:hover, .nav-btn.active {
+      background: rgba(94, 234, 212, 0.08);
+      border-color: rgba(94, 234, 212, 0.16);
+      transform: translateX(2px);
+    }
+    .nav-btn strong { font-size: 15px; }
+    .nav-btn span { color: var(--muted); font-size: 12px; }
+    .side-panel, .panel, .hero, .metric, .notice {
+      background: linear-gradient(180deg, var(--panel), rgba(8, 18, 34, 0.76));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .side-panel, .panel, .notice { padding: 18px; }
+    .side-panel { align-self: end; display: grid; gap: 10px; }
+    .workspace { padding: 24px 28px 36px; }
+    .workspace-inner { max-width: 1480px; margin: 0 auto; display: grid; gap: 18px; }
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: start;
+    }
+    .topbar h2 { font-size: clamp(28px, 3vw, 46px); line-height: 1.02; margin-top: 4px; margin-bottom: 8px; }
+    .top-actions { display: grid; gap: 10px; justify-items: end; min-width: 320px; }
+    .status-row, .btn-row, .meta-row, .tiles, .two, .three { display: grid; gap: 14px; }
+    .status-row { display: flex; justify-content: flex-end; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .btn-row { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+    .status-pill {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(15, 33, 57, 0.82);
+      border: 1px solid var(--line);
+      font-weight: 700;
+    }
+    .status-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+      box-shadow: 0 0 0 6px rgba(148, 163, 184, 0.12);
+    }
+    .status-pill[data-status="running"]::before,
+    .status-pill[data-status="loading"]::before {
+      background: var(--accent-2);
+      box-shadow: 0 0 0 6px rgba(94, 234, 212, 0.14);
+    }
+    .status-pill[data-status="error"]::before {
+      background: var(--bad);
+      box-shadow: 0 0 0 6px rgba(251, 113, 133, 0.14);
+    }
+    .status-pill[data-status="success"]::before {
+      background: var(--good);
+      box-shadow: 0 0 0 6px rgba(74, 222, 128, 0.14);
+    }
+    .status-line { color: var(--muted); font-size: 13px; }
+    .btn {
+      min-height: 44px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 0 16px;
+      font-weight: 700;
+      color: var(--text);
+      background: rgba(15, 33, 57, 0.88);
+    }
+    .btn.primary {
+      color: #041118;
+      border: 0;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+    }
+    .notice { display: grid; gap: 8px; }
+    .notice[data-tone="error"] { border-color: rgba(251, 113, 133, 0.3); }
+    .notice[data-tone="warning"] { border-color: rgba(251, 191, 36, 0.28); }
+    .view { display: grid; gap: 18px; animation: fade .16s ease; }
+    @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .hero { padding: 24px; display: grid; gap: 18px; position: relative; overflow: hidden; }
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -60px;
+      bottom: -60px;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(103, 232, 249, 0.18), transparent 62%);
+    }
+    .hero h3 { margin: 0; font-size: 24px; }
+    .hero-value { display: flex; gap: 16px; align-items: baseline; flex-wrap: wrap; position: relative; z-index: 1; }
+    .hero-number { font-size: clamp(42px, 5vw, 80px); line-height: .95; letter-spacing: -.06em; font-weight: 800; }
+    .hero-badge {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.05);
+      font-weight: 700;
+    }
+    .meta-row { display: flex; flex-wrap: wrap; }
+    .meta-chip {
+      min-width: 132px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255,255,255,.05);
+    }
+    .meta-chip span, .kv span, .table th { color: var(--muted); font-size: 12px; }
+    .meta-chip strong, .kv strong { display: block; margin-top: 6px; font-size: 18px; }
+    .tiles { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+    .metric { padding: 18px; }
+    .metric strong { display: block; margin: 6px 0; font-size: clamp(24px, 2.2vw, 38px); line-height: 1; letter-spacing: -.04em; }
+    .two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .three { grid-template-columns: 1.2fr .8fr; }
+    .panel { display: grid; gap: 14px; }
+    .section-head { display: flex; justify-content: space-between; gap: 10px; align-items: end; flex-wrap: wrap; }
+    .section-title { font-size: 22px; line-height: 1.06; }
+    .tag {
+      display: inline-flex;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(94, 234, 212, 0.08);
+      border: 1px solid rgba(94, 234, 212, 0.14);
+      color: var(--accent-2);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .kv-list { display: grid; gap: 10px; }
+    .kv {
+      display: grid;
+      grid-template-columns: minmax(120px, .9fr) 1fr;
+      gap: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .kv:last-child { border-bottom: 0; padding-bottom: 0; }
+    .chart {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      background: linear-gradient(180deg, rgba(7, 16, 29, 0.88), rgba(7, 16, 29, 0.64));
+    }
+    .alerts { display: grid; gap: 12px; }
+    .alert {
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.06);
+      background: rgba(255,255,255,.03);
+      display: grid;
+      gap: 6px;
+    }
+    .severity { display: inline-flex; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .severity.info { color: var(--accent-2); background: rgba(94, 234, 212, 0.08); }
+    .severity.warning { color: var(--warn); background: rgba(251, 191, 36, 0.08); }
+    .severity.critical { color: var(--bad); background: rgba(251, 113, 133, 0.08); }
+    .table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: 16px; }
+    .table { width: 100%; border-collapse: collapse; min-width: 680px; }
+    .table th, .table td {
+      padding: 13px 14px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+      white-space: nowrap;
+      vertical-align: top;
+      font-size: 14px;
+    }
+    .table th {
+      position: sticky;
+      top: 0;
+      background: rgba(8, 16, 30, 0.98);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .table tr:last-child td { border-bottom: 0; }
+    .field-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+    .field { display: grid; gap: 8px; }
+    .field label, .field span { font-size: 13px; color: var(--muted); }
+    .field input[type="number"] {
+      min-height: 46px;
+      border-radius: 14px;
+      border: 1px solid rgba(143, 180, 235, 0.22);
+      background: rgba(5, 12, 23, 0.86);
+      color: var(--text);
+      padding: 0 14px;
+    }
+    .agent-list { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+    .agent-row {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) 120px minmax(150px, 220px);
+      gap: 16px;
+      align-items: center;
+      padding: 16px;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+      background: rgba(255,255,255,.02);
+    }
+    .agent-row:last-child { border-bottom: 0; }
+    .check { display: inline-flex; align-items: center; gap: 10px; }
+    .good { color: var(--good); }
+    .bad { color: var(--bad); }
+    @media (max-width: 1200px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+    @media (max-width: 960px) {
+      .workspace { padding: 18px 14px 24px; }
+      .topbar, .two, .three { grid-template-columns: 1fr; }
+      .top-actions { justify-items: stretch; min-width: 0; }
+      .status-row, .btn-row { justify-content: flex-start; }
+      .agent-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="eyebrow">Multi-Agent Quant</div>
+        <h1>量化控制台</h1>
+        <p>拆成清晰模块页，让用户先判断、再操作、最后追踪历史，而不是被一整页混杂信息淹没。</p>
+      </div>
+      <nav id="nav" class="nav"></nav>
+      <section id="sidebarPanel" class="side-panel"></section>
+    </aside>
+
+    <section class="workspace">
+      <div class="workspace-inner">
+        <header class="topbar">
+          <div>
+            <div id="routeEyebrow" class="eyebrow"></div>
+            <h2 id="routeTitle"></h2>
+            <p id="routeSubtitle"></p>
+          </div>
+          <div class="top-actions">
+            <div class="status-row">
+              <div id="statusBadge" class="status-pill" data-status="idle">待机</div>
+              <div id="statusLine" class="status-line"></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn" data-action="refresh">刷新状态</button>
+              <button class="btn" data-action="disable-loser">禁用最弱智能体</button>
+              <button id="runButton" class="btn primary" data-action="run">运行模拟</button>
+            </div>
+          </div>
+        </header>
+
+        <section id="notice" class="notice"></section>
+        <main id="view"></main>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const ROUTES = {
+      overview: { label: "总览", brief: "先看当前是否健康", eyebrow: "Workspace / Overview", title: "一眼看清系统现在赚没赚钱、稳不稳定", subtitle: "总览页只放最关键的结果：权益、收益、风险告警和最近成交。" },
+      run: { label: "运行", brief: "集中改参数和启动", eyebrow: "Workspace / Run", title: "把启动、风控和智能体开关收拢到一个页面", subtitle: "运行页只负责配置与启动，不再混进持仓和实验历史。" },
+      agents: { label: "智能体", brief: "只看 agent 表现", eyebrow: "Workspace / Agents", title: "单独追踪每个智能体的贡献与 NAV 曲线", subtitle: "这里不放持仓细表，只看谁赚钱、谁拖后腿、曲线是否稳定。" },
+      portfolio: { label: "持仓", brief: "专门看账本和盈亏", eyebrow: "Workspace / Portfolio", title: "把持仓、盈亏和成交流水集中到同一条资金视角", subtitle: "持仓页就是账本页，不再被参数、历史和实验结果打断。" },
+      history: { label: "历史", brief: "看对比和实验结果", eyebrow: "Workspace / History", title: "历史、对比和 ablation 单独归档", subtitle: "纵向追踪放到一页里看，避免和当前实时状态混在一起。" }
+    };
+
+    const nav = document.getElementById("nav");
+    const sidebarPanel = document.getElementById("sidebarPanel");
+    const routeEyebrow = document.getElementById("routeEyebrow");
+    const routeTitle = document.getElementById("routeTitle");
+    const routeSubtitle = document.getElementById("routeSubtitle");
+    const statusBadge = document.getElementById("statusBadge");
+    const statusLine = document.getElementById("statusLine");
+    const notice = document.getElementById("notice");
+    const view = document.getElementById("view");
+    const runButton = document.getElementById("runButton");
+
+    const POLL_MS = 1500;
+    let currentState = null;
+    let controlDraft = null;
+    let draftDirty = false;
+    let fetchInFlight = false;
+    let poller = null;
+
+    function routePath(route) {
+      return `/console/${route}`;
+    }
+
+    function getRoute() {
+      const path = window.location.pathname.replace(/\/+$/, "");
+      const last = path.split("/").filter(Boolean).pop() || "";
+      return ROUTES[last] ? last : "overview";
+    }
+
+    function ensureRoute() {
+      const route = getRoute();
+      const expected = routePath(route);
+      if (window.location.pathname !== expected) {
+        history.replaceState({}, "", expected);
+      }
+      return route;
+    }
+
+    function navigate(route) {
+      const next = ROUTES[route] ? route : "overview";
+      const path = routePath(next);
+      if (window.location.pathname !== path) {
+        history.pushState({}, "", path);
+      }
+      render(currentState);
+    }
+
+    function cloneControls(controls) {
+      const source = controls || {};
+      const risk = source.risk_controls || {};
+      return {
+        loop_iterations: Number(source.loop_iterations || 80),
+        risk_controls: {
+          max_stock_position_pct: Number(risk.max_stock_position_pct ?? 0.3),
+          max_futures_contracts_per_symbol: Number(risk.max_futures_contracts_per_symbol ?? 2),
+          max_futures_margin_pct: Number(risk.max_futures_margin_pct ?? 0.28),
+          max_futures_notional_pct: Number(risk.max_futures_notional_pct ?? 0.7),
+          max_gross_exposure_pct: Number(risk.max_gross_exposure_pct ?? 0.95)
+        },
+        agents: (source.agents || []).map((agent) => ({
+          id: agent.id,
+          role: agent.role,
+          enabled: Boolean(agent.enabled),
+          capital_ratio: Number(agent.capital_ratio ?? 0)
+        }))
+      };
+    }
+
+    function syncDraft(controls, force = false) {
+      if (!controlDraft || force || !draftDirty) {
+        controlDraft = cloneControls(controls);
+      }
+    }
+
+    async function fetchState() {
+      if (fetchInFlight) return;
+      fetchInFlight = true;
+      const response = await fetch("/api/state");
+      try {
+        const payload = await response.json();
+        currentState = payload;
+        syncDraft(payload.controls || {});
+        render(payload);
+      } finally {
+        fetchInFlight = false;
+      }
+    }
+
+    function startPolling() {
+      if (poller !== null) return;
+      poller = window.setInterval(() => {
+        fetchState().catch((error) => setErrorStatus(error.message));
+      }, POLL_MS);
+    }
+
+    function setErrorStatus(message) {
+      statusBadge.dataset.status = "error";
+      statusBadge.textContent = "异常";
+      statusLine.textContent = message;
+    }
+
+    function render(state) {
+      const route = ensureRoute();
+      renderNav(route);
+      renderHeader(route, state);
+      renderSidebar(state);
+      renderNotice(state);
+      view.innerHTML = renderRoute(route, state);
+      updateRunButton(state?.status || "idle");
+    }
+
+    function renderNav(route) {
+      nav.innerHTML = Object.entries(ROUTES).map(([key, meta]) => `
+        <button class="nav-btn ${key === route ? "active" : ""}" type="button" data-route="${key}">
+          <strong>${meta.label}</strong>
+          <span>${meta.brief}</span>
+        </button>
+      `).join("");
+    }
+
+    function renderHeader(route, state) {
+      const meta = ROUTES[route];
+      routeEyebrow.textContent = meta.eyebrow;
+      routeTitle.textContent = meta.title;
+      routeSubtitle.textContent = meta.subtitle;
+      const status = state?.status || "idle";
+      statusBadge.dataset.status = status;
+      statusBadge.textContent = translateStatus(status);
+      statusLine.textContent = state?.summary?.generated_at
+        ? `最新结果 ${formatDateTime(state.summary.generated_at)}`
+        : "等待运行结果";
+    }
+
+    function renderSidebar(state) {
+      const kpis = state?.summary?.kpis || {};
+      const comparison = state?.comparison || null;
+      sidebarPanel.innerHTML = `
+        <div class="eyebrow">Quick Look</div>
+        <div class="kv-list">
+          ${kv("总权益", formatValue(kpis.equity))}
+          ${kv("已实现盈亏", formatSigned(kpis.realized_pnl))}
+          ${kv("未实现盈亏", formatSigned(kpis.unrealized_pnl_total ?? kpis.futures_unrealized_pnl))}
+          ${kv("成交笔数", formatValue(kpis.trade_count))}
+          ${kv("相较上次", comparison ? `${formatSigned(comparison.return_pct_delta)}%` : "-")}
+        </div>
+        <p class="muted">每个路由只处理一种任务，避免用户在长页中自己找功能模块。</p>
+      `;
+    }
+
+    function renderNotice(state) {
+      const hasError = Boolean(state?.last_error);
+      const tone = hasError ? "error" : (state?.status === "running" || state?.status === "loading") ? "warning" : "normal";
+      const summary = state?.summary || null;
+      notice.dataset.tone = tone;
+      notice.innerHTML = hasError
+        ? `<strong>最近一次运行出现异常</strong><div class="muted">${escapeHtml(state.last_error)}</div>`
+        : `<strong>当前上下文</strong><div class="meta-row">
+            <div class="meta-chip"><span>模式</span><strong>${escapeHtml(translateMode(summary?.mode))}</strong></div>
+            <div class="meta-chip"><span>市场</span><strong>${escapeHtml(translateMarket(summary?.market))}</strong></div>
+            <div class="meta-chip"><span>配置</span><strong>${escapeHtml(state?.active_config_path || state?.config_path || "-")}</strong></div>
+          </div>`;
+    }
+
+    function renderRoute(route, state) {
+      if (route === "run") return renderRun(state);
+      if (route === "agents") return renderAgents(state?.summary || null);
+      if (route === "portfolio") return renderPortfolio(state?.summary || null);
+      if (route === "history") return renderHistory(state);
+      return renderOverview(state);
+    }
+
+    function renderOverview(state) {
+      const summary = state?.summary;
+      if (!summary) return empty("还没有运行结果", "先到“运行”页启动一次模拟，这里就会出现权益、风险和最新成交。");
+      const kpis = summary.kpis || {};
+      const perf = summary.performance || {};
+      const holdings = [...(summary.positions?.stocks || [])].sort((a, b) => Number(b.market_value || 0) - Number(a.market_value || 0)).slice(0, 5);
+      const fills = (summary.recent_fills || []).slice(0, 8);
+      return `<div class="view">
+        <div class="three">
+          <section class="hero">
+            <div>
+              <div class="eyebrow">Capital Snapshot</div>
+              <h3>当前组合权益</h3>
+              <p class="muted">总览页只回答三个问题：有没有赚钱、风险是否可控、系统最近有没有异常。</p>
+            </div>
+            <div class="hero-value">
+              <div class="hero-number">${formatValue(kpis.equity)}</div>
+              <div class="hero-badge ${toneClass(formatSigned(perf.total_return_pct))}">${formatSigned(perf.total_return_pct)}%</div>
+            </div>
+            <div class="meta-row">
+              ${meta("可用现金", formatValue(kpis.cash_available))}
+              ${meta("总敞口", formatValue(kpis.gross_exposure))}
+              ${meta("最大回撤", `${formatValue(perf.max_drawdown_pct)}%`)}
+              ${meta("成交笔数", formatValue(kpis.trade_count))}
+            </div>
+          </section>
+          <section class="panel">
+            <div class="section-head"><div class="tag">立即判断</div></div>
+            <div class="kv-list">
+              ${kv("已实现盈亏", formatSigned(kpis.realized_pnl))}
+              ${kv("未实现盈亏", formatSigned(kpis.unrealized_pnl_total ?? kpis.futures_unrealized_pnl))}
+              ${kv("股票市值", formatValue(kpis.stock_market_value))}
+              ${kv("杠杆率", formatValue(kpis.leverage_ratio))}
+              ${kv("市场模式", `${translateMarket(summary.market)} / ${translateMode(summary.mode)}`)}
+            </div>
+          </section>
+        </div>
+        <section class="tiles">
+          ${metric("期货保证金", formatValue(kpis.futures_margin_in_use), "当前保证金占用")}
+          ${metric("总费用", formatValue(kpis.total_fees), "累计执行成本")}
+          ${metric("波动率", `${formatValue(perf.volatility_pct)}%`, "收益波动强度")}
+          ${metric("换手率", formatValue(perf.turnover_ratio), "资金轮换速度")}
+        </section>
+        <div class="three">
+          <section class="panel">
+            <div class="section-head"><div><h3 class="section-title">权益曲线</h3><p class="muted">这里只看账户权益，不混进智能体曲线和实验数据。</p></div></div>
+            ${curve(summary.equity_curve || [], "equity", "最高权益", "最低权益")}
+          </section>
+          <section class="panel">
+            <div class="section-head"><div><h3 class="section-title">运行告警</h3><p class="muted">保留最有判断价值的告警信息。</p></div></div>
+            ${alerts(summary.alerts || [])}
+          </section>
+        </div>
+        <div class="two">
+          <section class="panel">
+            <div class="section-head"><div><h3 class="section-title">当前主要持仓</h3><p class="muted">总览页只看头部持仓，完整账本放到“持仓”页。</p></div></div>
+            ${table(holdings, ["symbol", "quantity", "market_value", "unrealized_pnl"], ["代码", "数量", "市值", "未实现盈亏"])}
+          </section>
+          <section class="panel">
+            <div class="section-head"><div><h3 class="section-title">最近成交</h3><p class="muted">完整流水单独放在“持仓”页，这里只看最近几笔。</p></div></div>
+            ${table(fills, ["timestamp", "symbol", "effect", "quantity", "price", "agent_id"], ["时间", "代码", "动作", "数量", "价格", "智能体"])}
+          </section>
+        </div>
+      </div>`;
+    }
+
+    function renderRun(state) {
+      syncDraft(state?.controls || {});
+      const draft = controlDraft || cloneControls({});
+      const summary = state?.summary || null;
+      return `<div class="view">
+        <div class="two">
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <h3 class="section-title">运行参数</h3>
+                <p class="muted">这里只负责配置与启动，不再和结果、持仓、历史混在一起。</p>
+              </div>
+              <button class="btn" data-action="reset-draft">恢复当前配置</button>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <span>循环次数</span>
+                <input type="number" min="1" step="1" data-loop value="${escapeHtml(String(draft.loop_iterations))}">
+              </div>
+            </div>
+            <div class="section-head" style="margin-top:6px;">
+              <div>
+                <h3 class="section-title">风险控制</h3>
+                <p class="muted">所有阈值集中在同一块，用户不需要再滚动找参数。</p>
+              </div>
+            </div>
+            <div class="field-grid">
+              ${riskField("单股仓位上限", "max_stock_position_pct", draft.risk_controls.max_stock_position_pct, "0.01", "1.00", "0.01")}
+              ${riskField("单品种期货手数上限", "max_futures_contracts_per_symbol", draft.risk_controls.max_futures_contracts_per_symbol, "1", "", "1")}
+              ${riskField("期货保证金上限", "max_futures_margin_pct", draft.risk_controls.max_futures_margin_pct, "0.01", "1.00", "0.01")}
+              ${riskField("期货名义仓位上限", "max_futures_notional_pct", draft.risk_controls.max_futures_notional_pct, "0.01", "3.00", "0.01")}
+              ${riskField("总风险敞口上限", "max_gross_exposure_pct", draft.risk_controls.max_gross_exposure_pct, "0.01", "3.00", "0.01")}
+            </div>
+          </section>
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <h3 class="section-title">运行上下文</h3>
+                <p class="muted">确保用户知道当前跑的是哪套配置、什么模式、什么市场。</p>
+              </div>
+            </div>
+            <div class="kv-list">
+              ${kv("基础配置", state?.config_path || "-")}
+              ${kv("当前生效配置", state?.active_config_path || "-")}
+              ${kv("模式", translateMode(summary?.mode))}
+              ${kv("市场", translateMarket(summary?.market))}
+              ${kv("数据源", summary?.data_source?.market_feed_type || "-")}
+            </div>
+          </section>
+        </div>
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title">智能体开关与资金配比</h3>
+              <p class="muted">一个列表只做一件事：决定谁参与、每个 agent 分多少资金。</p>
+            </div>
+          </div>
+          ${agentConfig(draft.agents)}
+        </section>
+      </div>`;
+    }
+
+    function renderAgents(summary) {
+      if (!summary) return empty("还没有智能体结果", "先运行一次模拟，这里才会出现智能体排行和 NAV 曲线。");
+      const attr = summary.agent_attribution || {};
+      const rank = attr.ranking || [];
+      return `<div class="view">
+        <div class="two">
+          ${spotlight("当前最优智能体", attr.top_winner)}
+          ${spotlight("当前最弱智能体", attr.top_loser)}
+        </div>
+        <section class="panel">
+          <div class="section-head"><div><h3 class="section-title">智能体 NAV 曲线</h3><p class="muted">这页专门看 agent 走势，不再和账户权益争抢注意力。</p></div></div>
+          ${agentCurve(summary.agent_contribution_curves || {}, attr)}
+        </section>
+        <section class="panel">
+          <div class="section-head"><div><h3 class="section-title">贡献排行</h3><p class="muted">只看 agent 视角的数据：NAV、收益率、净盈亏和行为拆解。</p></div></div>
+          ${table(rank, ["rank", "agent_id", "role", "nav", "return_pct", "net_pnl", "realized_pnl", "unrealized_pnl", "trade_count", "effect_breakdown"], ["排名", "智能体", "角色", "NAV", "收益率 %", "净盈亏", "已实现盈亏", "未实现盈亏", "成交笔数", "行为拆解"])}
+        </section>
+      </div>`;
+    }
+
+    function renderPortfolio(summary) {
+      if (!summary) return empty("还没有持仓账本", "运行完成后，这里会单独展示持仓、盈亏和成交，不再和参数、历史混在一起。");
+      const kpis = summary.kpis || {};
+      const rank = summary.agent_attribution?.ranking || [];
+      return `<div class="view">
+        <section class="tiles">
+          ${metric("组合权益", formatValue(kpis.equity), "账户总权益")}
+          ${metric("已实现盈亏", formatSigned(kpis.realized_pnl), "已落地收益")}
+          ${metric("未实现盈亏", formatSigned(kpis.unrealized_pnl_total ?? kpis.futures_unrealized_pnl), "浮动盈亏")}
+          ${metric("股票市值", formatValue(kpis.stock_market_value), "股票仓位价值")}
+          ${metric("可用现金", formatValue(kpis.cash_available), "当前可用资金")}
+        </section>
+        <div class="two">
+          <section class="panel">
+            <div class="section-head"><div><h3 class="section-title">股票持仓</h3><p class="muted">股票账本只看仓位和浮盈浮亏。</p></div></div>
+            ${table(summary.positions?.stocks || [], ["symbol", "quantity", "avg_price", "last_price", "market_value", "unrealized_pnl"], ["代码", "数量", "均价", "现价", "市值", "未实现盈亏"])}
+          </section>
+          <section class="panel">
+            <div class="section-head"><div><h3 class="section-title">期货持仓</h3><p class="muted">没有期货时也保留清晰占位。</p></div></div>
+            ${table(summary.positions?.futures || [], ["symbol", "long_qty", "short_qty", "last_price", "unrealized_pnl"], ["代码", "多头", "空头", "现价", "未实现盈亏"])}
+          </section>
+        </div>
+        <section class="panel">
+          <div class="section-head"><div><h3 class="section-title">智能体资金归因</h3><p class="muted">从资金视角看，每个 agent 占用了多少仓位、带来多少净盈亏。</p></div></div>
+          ${table(rank, ["agent_id", "role", "effective_capital_ratio", "nav", "net_pnl", "trade_count", "total_notional"], ["智能体", "角色", "资金占比", "NAV", "净盈亏", "成交笔数", "成交额"])}
+        </section>
+        <section class="panel">
+          <div class="section-head"><div><h3 class="section-title">最近成交流水</h3><p class="muted">成交单独成块，用户可以直接把这页当账本页使用。</p></div></div>
+          ${table(summary.recent_fills || [], ["timestamp", "symbol", "stock_name", "effect", "quantity", "price", "notional", "realized_pnl", "agent_id"], ["时间", "代码", "名称", "动作", "数量", "价格", "成交额", "已实现盈亏", "智能体"])}
+        </section>
+      </div>`;
+    }
+
+    function renderHistory(state) {
+      const summary = state?.summary || null;
+      const cmp = state?.comparison || null;
+      return `<div class="view">
+        <section class="tiles">
+          ${metric("权益变化", cmp ? formatSigned(cmp.equity_delta) : "-", "相较上一轮")}
+          ${metric("收益率变化", cmp ? formatSigned(cmp.return_pct_delta) : "-", "百分点变化")}
+          ${metric("回撤变化", cmp ? formatSigned(cmp.max_drawdown_pct_delta) : "-", "百分点变化")}
+          ${metric("成交笔数变化", cmp ? formatSigned(cmp.trade_count_delta) : "-", "相比上一轮")}
+          ${metric("杠杆变化", cmp ? formatSigned(cmp.leverage_ratio_delta) : "-", "相比上一轮")}
+        </section>
+        <section class="panel">
+          <div class="section-head"><div><h3 class="section-title">运行历史</h3><p class="muted">这里专门做时间维度追踪，不再和实时操作挤在一起。</p></div></div>
+          ${table(state?.history || [], ["run_id", "generated_at", "mode", "ticks_processed", "equity", "total_return_pct", "max_drawdown_pct", "trade_count"], ["运行 ID", "生成时间", "模式", "Tick 数", "总权益", "收益率 %", "最大回撤 %", "成交笔数"])}
+        </section>
+        <div class="two">
+          <section class="panel">
+            <div class="section-head"><div><h3 class="section-title">Ablation 对比</h3><p class="muted">实验结果归档到历史页，不再夹在当前操作流里。</p></div></div>
+            ${ablation(summary?.ablation_report || null)}
+          </section>
+          <section class="panel">
+            <div class="section-head"><div><h3 class="section-title">当前告警清单</h3><p class="muted">告警结构化保留，便于和历史一起对照。</p></div></div>
+            ${table(summary?.alerts || [], ["severity", "code", "agent_id", "message"], ["级别", "代码", "智能体", "说明"])}
+          </section>
+        </div>
+      </div>`;
+    }
+
+    function empty(title, desc) {
+      return `<div class="view"><section class="panel"><div class="section-head"><div><h3 class="section-title">${escapeHtml(title)}</h3><p class="muted">${escapeHtml(desc)}</p></div></div><p class="empty">当前页面会在第一次运行完成后自动填充。</p></section></div>`;
+    }
+
+    function kv(label, value) {
+      return `<div class="kv"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`;
+    }
+
+    function meta(label, value) {
+      return `<div class="meta-chip"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`;
+    }
+
+    function metric(label, value, note) {
+      return `<section class="metric"><span class="muted">${escapeHtml(label)}</span><strong class="${toneClass(value)}">${escapeHtml(value)}</strong><span class="muted">${escapeHtml(note)}</span></section>`;
+    }
+
+    function riskField(label, key, value, min, max, step) {
+      const maxAttr = max ? `max="${max}"` : "";
+      return `<div class="field"><span>${escapeHtml(label)}</span><input type="number" data-risk="${escapeHtml(key)}" value="${escapeHtml(String(value))}" min="${escapeHtml(min)}" ${maxAttr} step="${escapeHtml(step)}"></div>`;
+    }
+
+    function agentConfig(agents) {
+      if (!agents.length) return `<p class="empty">暂无智能体配置。</p>`;
+      return `<div class="agent-list">${agents.map((agent) => `
+        <div class="agent-row">
+          <div><strong>${escapeHtml(agent.id)}</strong><div class="muted">${escapeHtml(translateRole(agent.role))}</div></div>
+          <label class="check"><input type="checkbox" data-agent-enabled="${escapeHtml(agent.id)}" ${agent.enabled ? "checked" : ""}>启用</label>
+          <div class="field"><span>资金配比</span><input type="number" min="0.01" max="1.00" step="0.01" data-agent-ratio="${escapeHtml(agent.id)}" value="${escapeHtml(String(agent.capital_ratio))}"></div>
+        </div>`).join("")}</div>`;
+    }
+
+    function spotlight(title, agent) {
+      if (!agent) return `<section class="panel"><div class="section-head"><div><h3 class="section-title">${escapeHtml(title)}</h3><p class="muted">当前没有可展示结果。</p></div></div></section>`;
+      return `<section class="panel">
+        <div class="section-head"><div><h3 class="section-title">${escapeHtml(title)}</h3><p class="muted">${escapeHtml(translateRole(agent.role))}</p></div></div>
+        <div class="hero-value"><div class="hero-number">${escapeHtml(agent.agent_id || "-")}</div></div>
+        <div class="kv-list">
+          ${kv("净盈亏", formatSigned(agent.net_pnl))}
+          ${kv("NAV", formatValue(agent.nav))}
+          ${kv("收益率", `${formatValue(agent.return_pct)}%`)}
+          ${kv("成交笔数", formatValue(agent.trade_count))}
+        </div>
+      </section>`;
+    }
+
+    function alerts(list) {
+      if (!list.length) return `<p class="empty">当前没有运行告警。</p>`;
+      return `<div class="alerts">${list.map((item) => `
+        <article class="alert">
+          <div><span class="severity ${escapeHtml(item.severity || "info")}">${escapeHtml(translateSeverity(item.severity))}</span></div>
+          <strong>${escapeHtml(item.code || "告警")}</strong>
+          <div>${escapeHtml(item.message || "-")}</div>
+        </article>`).join("")}</div>`;
+    }
+
+    function curve(points, key, maxLabel, minLabel) {
+      if (!points.length) return `<p class="empty">暂无曲线数据。</p>`;
+      const width = 980;
+      const height = 240;
+      const pad = 24;
+      const values = points.map((point) => Number(point[key] || 0));
+      let min = Math.min(...values);
+      let max = Math.max(...values);
+      if (min === max) { min -= 1; max += 1; }
+      const spread = Math.max(max - min, 1);
+      const step = (width - pad * 2) / Math.max(points.length - 1, 1);
+      const poly = points.map((point, index) => {
+        const x = pad + index * step;
+        const y = height - pad - ((Number(point[key] || 0) - min) / spread) * (height - pad * 2);
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      }).join(" ");
+      return `<div class="chart"><svg viewBox="0 0 ${width} ${height}" width="100%" height="250" preserveAspectRatio="none">
+        <polyline fill="none" stroke="#67e8f9" stroke-width="3" points="${poly}"></polyline>
+        <text x="${pad}" y="18" fill="#94a3b8" font-size="12">${escapeHtml(maxLabel)} ${escapeHtml(formatValue(max))}</text>
+        <text x="${pad}" y="${height - 8}" fill="#94a3b8" font-size="12">${escapeHtml(minLabel)} ${escapeHtml(formatValue(min))}</text>
+        <text x="${width - 120}" y="18" fill="#94a3b8" font-size="12">点数 ${points.length}</text>
+      </svg></div>`;
+    }
+
+    function agentCurve(curves, attr) {
+      const ranking = attr?.ranking || [];
+      const ids = ranking.slice(0, 4).map((row) => row.agent_id).filter(Boolean);
+      const selected = (ids.length ? ids : Object.keys(curves || {}).slice(0, 4)).map((id) => ({ id, points: curves[id] || [] })).filter((item) => item.points.length);
+      if (!selected.length) return `<p class="empty">暂无智能体 NAV 曲线。</p>`;
+      const width = 980;
+      const height = 240;
+      const pad = 26;
+      const colors = ["#5eead4", "#67e8f9", "#fbbf24", "#fb7185"];
+      const values = selected.flatMap((item) => item.points.map((point) => Number(point.nav ?? 0)));
+      let min = Math.min(...values);
+      let max = Math.max(...values);
+      if (min === max) { min -= 1; max += 1; }
+      const spread = Math.max(max - min, 1);
+      const longest = Math.max(...selected.map((item) => item.points.length));
+      const step = (width - pad * 2) / Math.max(longest - 1, 1);
+      const lines = selected.map((item, idx) => {
+        const pts = item.points.map((point, index) => {
+          const x = pad + index * step;
+          const y = height - pad - ((Number(point.nav ?? 0) - min) / spread) * (height - pad * 2);
+          return `${x.toFixed(1)},${y.toFixed(1)}`;
+        }).join(" ");
+        return `<polyline fill="none" stroke="${colors[idx % colors.length]}" stroke-width="3" points="${pts}"></polyline>`;
+      }).join("");
+      const legends = selected.map((item, idx) => `<text x="${pad}" y="${20 + idx * 18}" fill="${colors[idx % colors.length]}" font-size="12">${escapeHtml(item.id)}</text>`).join("");
+      return `<div class="chart"><svg viewBox="0 0 ${width} ${height}" width="100%" height="250" preserveAspectRatio="none">
+        ${lines}${legends}
+        <text x="${width - 170}" y="18" fill="#94a3b8" font-size="12">最高 NAV ${escapeHtml(formatValue(max))}</text>
+        <text x="${width - 170}" y="${height - 8}" fill="#94a3b8" font-size="12">最低 NAV ${escapeHtml(formatValue(min))}</text>
+      </svg></div>`;
+    }
+
+    function ablation(report) {
+      if (!report) return `<p class="empty">暂无 ablation 结果。</p>`;
+      const base = report.baseline || {};
+      const best = report.best_disable_candidate || null;
+      return `${table([
+        { item: "基准收益率", value: `${formatValue(base.total_return_pct)}%` },
+        { item: "基准最大回撤", value: `${formatValue(base.max_drawdown_pct)}%` },
+        { item: "基准成交笔数", value: formatValue(base.trade_count) },
+        { item: "最佳移除候选", value: best ? `${best.disabled_agent_id} / 收益变化 ${formatSigned(best.return_pct_delta)} / 回撤变化 ${formatSigned(best.max_drawdown_pct_delta)}` : "-" }
+      ], ["item", "value"], ["项目", "结果"])}
+      <div style="height:14px;"></div>
+      ${table(report.scenarios || [], ["disabled_agent_id", "disabled_role", "total_return_pct", "return_pct_delta", "max_drawdown_pct", "max_drawdown_pct_delta", "trade_count"], ["移除智能体", "角色", "收益率 %", "收益率变化", "最大回撤 %", "回撤变化", "成交笔数"])}`;
+    }
+
+    function table(rows, keys, headers) {
+      if (!rows || !rows.length) return `<p class="empty">暂无数据。</p>`;
+      const head = headers.map((header) => `<th>${escapeHtml(header)}</th>`).join("");
+      const body = rows.map((row) => `<tr>${keys.map((key) => `<td>${escapeHtml(cell(key, row[key]))}</td>`).join("")}</tr>`).join("");
+      return `<div class="table-wrap"><table class="table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+    }
+
+    function cell(key, value) {
+      if (key === "effect") return translateEffect(value);
+      if (key === "role" || key === "disabled_role") return translateRole(value);
+      if (key === "mode") return translateMode(value);
+      if (key === "market") return translateMarket(value);
+      if (key === "severity") return translateSeverity(value);
+      if (key === "timestamp" || key === "generated_at") return formatDateTime(value);
+      if (key === "effect_breakdown") return effectBreakdown(value);
+      return formatValue(value);
+    }
+
+    function collectOverrides() {
+      const draft = controlDraft || cloneControls(currentState?.controls || {});
+      return {
+        system: { loop_iterations: Number(draft.loop_iterations || 0) },
+        risk_controls: {
+          max_stock_position_pct: Number(draft.risk_controls.max_stock_position_pct || 0),
+          max_futures_contracts_per_symbol: Number(draft.risk_controls.max_futures_contracts_per_symbol || 0),
+          max_futures_margin_pct: Number(draft.risk_controls.max_futures_margin_pct || 0),
+          max_futures_notional_pct: Number(draft.risk_controls.max_futures_notional_pct || 0),
+          max_gross_exposure_pct: Number(draft.risk_controls.max_gross_exposure_pct || 0)
+        },
+        agents: draft.agents.map((agent) => ({ id: agent.id, enabled: Boolean(agent.enabled), capital_ratio: Number(agent.capital_ratio || 0) }))
+      };
+    }
+
+    async function runSimulation() {
+      updateRunButton("running");
+      statusBadge.dataset.status = "running";
+      statusBadge.textContent = "运行中";
+      statusLine.textContent = "正在后台启动模拟...";
+      try {
+        const response = await fetch("/api/run", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(collectOverrides())
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || "启动失败");
+        draftDirty = false;
+        currentState = payload;
+        syncDraft(payload.controls || {}, true);
+        render(payload);
+        startPolling();
+      } catch (error) {
+        setErrorStatus(error.message);
+        updateRunButton("error");
+      }
+    }
+
+    async function disableLoserAndRun() {
+      const loser = currentState?.summary?.agent_attribution?.top_loser;
+      if (!loser?.agent_id) {
+        statusLine.textContent = "当前没有可关闭的最弱智能体。";
+        return;
+      }
+      if (loser.agent_id === "risk-engine") {
+        statusLine.textContent = "当前最弱对象是风控引擎，不能直接禁用。";
+        return;
+      }
+      syncDraft(currentState?.controls || {});
+      const agent = controlDraft.agents.find((item) => item.id === loser.agent_id);
+      if (!agent) {
+        statusLine.textContent = `找不到智能体 ${loser.agent_id} 的配置。`;
+        return;
+      }
+      agent.enabled = false;
+      draftDirty = true;
+      render(currentState);
+      statusLine.textContent = `已禁用 ${loser.agent_id}，正在重新运行。`;
+      await runSimulation();
+    }
+
+    function updateRunButton(status) {
+      const running = status === "running" || status === "loading";
+      runButton.disabled = running;
+      runButton.textContent = running ? "运行中..." : "运行模拟";
+    }
+
+    function formatValue(value) {
+      if (typeof value === "number") {
+        return Number.isInteger(value) ? value.toLocaleString("zh-CN") : value.toLocaleString("zh-CN", { maximumFractionDigits: 4 });
+      }
+      if (value === null || value === undefined || value === "") return "-";
+      return String(value);
+    }
+
+    function formatSigned(value) {
+      if (value === null || value === undefined || value === "") return "-";
+      const n = Number(value || 0);
+      return n > 0 ? `+${formatValue(n)}` : formatValue(n);
+    }
+
+    function formatDateTime(value) {
+      return value ? String(value).replace("T", " ") : "-";
+    }
+
+    function toneClass(value) {
+      const text = String(value || "");
+      if (text.startsWith("+")) return "good";
+      if (text.startsWith("-")) return "bad";
+      return "";
+    }
+
+    function effectBreakdown(value) {
+      const entries = Object.entries(value || {});
+      if (!entries.length) return "-";
+      return entries.sort((a, b) => String(a[0]).localeCompare(String(b[0]))).map(([effect, count]) => `${translateEffect(effect)} x${count}`).join(" / ");
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function translateStatus(value) {
+      return { idle: "待机", running: "运行中", success: "成功", error: "异常", loading: "加载中" }[value] || value || "-";
+    }
+
+    function translateRole(value) {
+      return { news_event: "新闻事件", reactive: "反应式交易", swing: "波段交易", futures_hedge: "期货对冲", risk_engine: "风控引擎" }[value] || value || "-";
+    }
+
+    function translateEffect(value) {
+      return { buy_stock: "买入股票", sell_stock: "卖出股票", open_long: "开多", close_long: "平多", open_short: "开空", close_short: "平空" }[value] || value || "-";
+    }
+
+    function translateSeverity(value) {
+      return { info: "提示", warning: "警告", critical: "严重" }[value] || value || "-";
+    }
+
+    function translateMode(value) {
+      return { simulation: "模拟", realtime: "实时", backtest: "回测" }[value] || value || "-";
+    }
+
+    function translateMarket(value) {
+      return { cn: "中国市场" }[value] || value || "-";
+    }
+
+    document.addEventListener("click", (event) => {
+      const routeBtn = event.target.closest("[data-route]");
+      if (routeBtn) {
+        navigate(routeBtn.getAttribute("data-route"));
+        return;
+      }
+
+      const actionBtn = event.target.closest("[data-action]");
+      if (!actionBtn) return;
+      const action = actionBtn.getAttribute("data-action");
+      if (action === "run") runSimulation().catch((error) => setErrorStatus(error.message));
+      if (action === "refresh") fetchState().catch((error) => setErrorStatus(error.message));
+      if (action === "disable-loser") disableLoserAndRun().catch((error) => setErrorStatus(error.message));
+      if (action === "reset-draft") {
+        syncDraft(currentState?.controls || {}, true);
+        draftDirty = false;
+        render(currentState);
+      }
+    });
+
+    document.addEventListener("input", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      syncDraft(currentState?.controls || {}, false);
+      if (target.matches("[data-loop]")) {
+        controlDraft.loop_iterations = Number(target.value);
+        draftDirty = true;
+      }
+      if (target.matches("[data-risk]")) {
+        controlDraft.risk_controls[target.getAttribute("data-risk")] = Number(target.value);
+        draftDirty = true;
+      }
+      if (target.matches("[data-agent-enabled]")) {
+        const agent = controlDraft.agents.find((item) => item.id === target.getAttribute("data-agent-enabled"));
+        if (agent) {
+          agent.enabled = target.checked;
+          draftDirty = true;
+        }
+      }
+      if (target.matches("[data-agent-ratio]")) {
+        const agent = controlDraft.agents.find((item) => item.id === target.getAttribute("data-agent-ratio"));
+        if (agent) {
+          agent.capital_ratio = Number(target.value);
+          draftDirty = true;
+        }
+      }
+    });
+
+    window.addEventListener("popstate", () => render(currentState));
+
+    ensureRoute();
+    fetchState().catch((error) => {
+      setErrorStatus(error.message);
+      render(null);
+    });
+    startPolling();
+  </script>
+</body>
+</html>

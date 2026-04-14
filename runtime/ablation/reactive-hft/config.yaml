@@ -1,0 +1,129 @@
+version: 0.1.0
+system:
+  mode: simulation
+  timezone: Asia/Shanghai
+  market: cn
+  capital_base: 1000000
+  loop_iterations: 80
+  risk_budget:
+    max_drawdown: 0.12
+    var_limit: 0.08
+    exposure_limit: 1.0
+feeds:
+  market:
+    type: synthetic_cn
+    symbols:
+    - 510300.SH
+    - 600519.SH
+    - IH9999.CCFX
+    refresh_seconds: 1
+    iterations: 300
+    seed: 7
+    initial_price:
+      510300.SH: 3.86
+      600519.SH: 1480.0
+      IH9999.CCFX: 2410.0
+  fundamental:
+    type: tushare
+    fields:
+    - roe
+    - pe_ttm
+    - revenue_yoy
+  sentiment:
+    type: synthetic_news
+    languages:
+    - zh
+    llm_summarizer: qwen2.5:32b
+  news:
+    type: synthetic
+    symbols:
+    - 510300.SH
+    - 600519.SH
+    languages:
+    - zh
+    refresh_interval: 60
+reasoning:
+  llm_router:
+    default: qwen2.5:32b
+    fallbacks:
+    - glm4:9b
+    - gpt-4o-mini
+  context_store:
+    type: sqlite
+    path: data/rag_store.db
+strategy_factory:
+  templates:
+  - pair_trade
+  - trend_follow
+  - event_driven
+  autogen:
+    enabled: true
+    max_candidates: 12
+  genetic:
+    population: 24
+    elitism: 0.2
+agents:
+  scheduler:
+    max_concurrent: 6
+    heartbeat_seconds: 2
+  registry:
+  - id: news-alpha
+    role: news_event
+    capital_ratio: 0.25
+  - id: reactive-hft
+    role: reactive
+    capital_ratio: 0.35
+    enabled: false
+  - id: swing-scout
+    role: swing
+    capital_ratio: 0.2
+  - id: index-hedge
+    role: futures_hedge
+    capital_ratio: 0.2
+market_simulation:
+  liquidity_model: cn_order_book
+  shock_scenarios:
+  - flash_crash
+  - vol_spike
+  adversaries:
+    spoofing: true
+    momentum_ignition: true
+  slippage_bps: 8
+portfolio_brain:
+  optimizer: risk_parity
+  bandit:
+    type: ucb
+    exploration: 0.25
+  min_trade_notional: 5000
+  per_trade_nav_pct: 0.1
+  loser_deweight_enabled: true
+  loser_deweight_floor: 0.35
+  loser_deweight_slope: 3.0
+risk_engine:
+  controls:
+    kill_switch: false
+    circuit_breaker: 0.05
+    position_limit_pct: 0.35
+    min_confidence: 0.45
+    max_volatility: 0.8
+    max_stock_position_pct: 0.3
+    max_futures_contracts_per_symbol: 2
+    max_futures_margin_pct: 0.28
+    max_futures_notional_pct: 0.7
+    max_gross_exposure_pct: 0.95
+execution:
+  venues:
+  - name: sim-ctp
+    type: paper
+    adapter: ctp
+  default_venue: sim-ctp
+  lot_size: 100
+  futures_multiplier:
+    IH9999.CCFX: 300
+  futures_margin_rate: 0.12
+  futures_maintenance_margin_rate: 0.1
+  futures_fee_rate: 2.3e-05
+  blotter_path: D:\Project\Ai-Task\multi-agent-quant\runtime\ablation\reactive-hft\blotter.jsonl
+logging:
+  level: INFO
+  sink: logs/system.log
